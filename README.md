@@ -279,3 +279,23 @@
      systemctl start haproxy
      systemctl status haproxy
        ```
+
+## Generate and host install files
+
+1. Generate an SSH key pair keeping all default options
+
+   ```bash
+   ssh-keygen
+   ```
+
+2. Create an install directory
+
+   ```bash
+   mkdir ~/okd-install
+   ```
+
+3. Copy the install-config.yaml included in the clone repository to the install directory
+
+   ```bash
+   cp ~/okd/install-config.yaml ~/okd-install
+   ```
