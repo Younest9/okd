@@ -427,13 +427,13 @@
 
 ## Access the OpenShift Console
 
-1. Wait for the 'console' Cluster Operator to become available
+1. Wait for the 'Console' Cluster Operator to become available
 
    ```bash
    oc get co
    ```
    
-2. Navigate to the OpenShift Console URL (https://console-openshift-console.apps.<Cluster_name>.<Base_domain>) and log in as the 'admin' user
+2. Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'admin' user
 
    > You will get self signed certificate warnings that you can ignore
    > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
