@@ -41,7 +41,7 @@
 
 
 
-3. When you install an OKD cluster, you download the installation program ([the openshift-install tar.gz file]()) from [the github repository of OKD](https://github.com/okd-project/okd/releases)
+3. When you install an OKD cluster, you download the installation program ([the openshift-install tar.gz file](https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-02-18-033438/openshift-install-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz)) from [the github repository of OKD](https://github.com/okd-project/okd/releases)
 
 ## Prepare the 'Bare Metal' environment
 
