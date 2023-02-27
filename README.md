@@ -32,16 +32,11 @@
    -  Select 'Run on Bare Metal'
    -  Download Pull secret
    
-      - Using a pull secret from the Red Hat OpenShift Cluster Manager is not required. You can use a pull secret for another private registry. Or, if you do not need the cluster to pull images from a private registry, you can use ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` as the pull secret when prompted during the installation.
-      
-
-      - If you do not use the pull secret from the Red Hat OpenShift Cluster Manager:
-
-          - Red Hat Operators are not available.
-
-          - The Telemetry and Insights operators do not send data to Red Hat.
-
-          - Content from the Red Hat Ecosystem Catalog Container images registry, such as image streams and Operators, are not available.
+      >Using a pull secret from the Red Hat OpenShift Cluster Manager is not required. You can use a pull secret for another private registry. Or, if you do not need the cluster to pull images from a private registry, you can use ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` as the pull secret when prompted during the installation.
+      >If you do not use the pull secret from the Red Hat OpenShift Cluster Manager:
+         > - Red Hat Operators are not available.
+         > - The Telemetry and Insights operators do not send data to Red Hat.
+         > - Content from the Red Hat Ecosystem Catalog Container images registry, such as image streams and Operators, are not available.
 
 
 
@@ -298,4 +293,100 @@
 
    ```bash
    cp ~/okd/install-config.yaml ~/okd-install
+   ```
+   
+4. Update the install-config.yaml with your own pull-secret and ssh key.
+
+   - Line 23 should contain the contents of your pull-secret.txt
+   - Line 24 should contain the contents of your '~/.ssh/id_rsa.pub'
+
+   ```bash
+   nano ~/okd-install/install-config.yaml
+   ```
+5. Generate Kubernetes manifest files
+
+   ```bash
+   ~/openshift-install create manifests --dir ~/okd-install
+   ```
+
+   > A warning is shown about making the control plane nodes schedulable. It is up to you if you want to run workloads on the Control Plane nodes. If you dont want to you can disable this with:
+   > `sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/ocp-install/manifests/cluster-scheduler-02-config.yml`.
+   > If you want to enable it, you can with:
+   >`sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/ocp-install/manifests/cluster-scheduler-02-config.yml`.
+   > Make any other custom changes you like to the core Kubernetes manifest files.
+   
+   Generate the Ignition config and Kubernetes auth files
+
+   ```bash
+   ~/openshift-install create ignition-configs --dir ~/okd-install/
+   ```
+   
+6. Create a hosting directory to serve the configuration files for the OKD booting process
+
+   ```bash
+   mkdir /var/www/okd
+   ```
+
+7. Copy all generated install files to the new web server directory
+
+   ```bash
+   cp  ~/okd-install/master.ign  ~/okd-install/bootstrap.ign  ~/okd-install/worker.ign  /var/www/okd/
+   ```
+
+8. Change permissions of the web server directory
+
+   ```bash
+   chmod +r /var/www/html/okd/*
+   ```
+   
+9. Confirm you can see all files added to the `/var/www/html/okd/` dir through Apache
+
+   ```bash
+   curl localhost/okd/
+   ```
+## Deploy OKD
+
+1. Power on the bootstrap host and cp-# hosts
+
+    After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso
+    ```bash
+    # Bootstrap Node - bootstrap
+    sudo coreos-installer install /dev/sda -I htttp://<Host_apache_server>/okd/bootstrap.ign --insecure --insecure-ignition
+    ```
+    ```bash
+    # Each of the Control Plane Nodes - cp-\#
+    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign --insecure --insecure-ignition
+    ```
+
+## Monitor the Bootstrap Process
+
+1. You can monitor the bootstrap process from the okd-svc host at different log levels (debug, error, info)
+
+   ```bash
+   ~/openshift-install --dir ~/okd-install wait-for bootstrap-complete --log-level=debug
+   ```
+
+2. Once bootstrapping is complete the okd-boostrap node [can be removed](#remove-the-bootstrap-node)
+
+## Remove the Bootstrap Node
+
+1. Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file
+
+   ```bash
+   # Two entries
+   nano /etc/haproxy/haproxy.cfg
+   # Restart HAProxy - If you are still watching HAProxy stats console you will see that the boostrap host has been removed from the backends.
+   systemctl reload haproxy
+   ```
+
+2. The bootstrap host can now be safely shutdown and deleted, the host is no longer required
+
+## Wait for installation to complete
+
+> IMPORTANT: if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
+
+1. Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event
+
+   ```bash
+   ~/openshift-install --dir ~/okd-install wait-for install-complete
    ```
