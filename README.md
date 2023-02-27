@@ -10,6 +10,7 @@
   - [Monitor the Bootstrap Process](#monitor-the-bootstrap-process)
   - [Remove the Bootstrap Node](#remove-the-bootstrap-node)
   - [Wait for installation to complete](#wait-for-installation-to-complete)
+  - [Join Worker Nodes](#join-worker-nodes)
   - [Access the OKD Console](#access-the-OKD-console)
   
   
@@ -389,4 +390,37 @@
 
    ```bash
    ~/openshift-install --dir ~/okd-install wait-for install-complete
+   ```
+1. Continue to join the worker nodes to the cluster in a new tab whilst waiting for the above command to complete
+
+## Join Worker Nodes
+
+1. Setup 'oc' and 'kubectl' clients on the ocp-svc machine
+
+   ```bash
+   export KUBECONFIG=~/okd-install/auth/kubeconfig
+   # Test auth by viewing cluster nodes
+   oc get nodes
+   ```
+
+1. View and approve pending CSRs
+
+   > Note: Once you approve the first set of CSRs additional 'kubelet-serving' CSRs will be created. These must be approved too.
+   > If you do not see pending requests wait until you do.
+
+   ```bash
+   # View CSRs
+   oc get csr
+   # Approve all pending CSRs
+   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+   # Wait for kubelet-serving CSRs and approve them too with the same command
+   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+   ```
+
+1. Watch and wait for the Worker Nodes to join the cluster and enter a 'Ready' status
+
+   > This can take 5-10 minutes
+
+   ```bash
+   watch -n5 oc get nodes
    ```
