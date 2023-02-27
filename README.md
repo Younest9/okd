@@ -245,9 +245,9 @@
 13. Install & configure Apache Web Server (necessary to download the config files to passe in as arguments in the installation)
   
   - You can install apache on any Linux distro, in our case:
-        ```bash
-      apt install apache2 -y
-        ```
+     ```
+     apt install apache2 -y
+     ```
 
 14. Install & configure HAProxy
 
