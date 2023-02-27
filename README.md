@@ -22,7 +22,7 @@
 1. Download any Linux based OS you want, this will server as the api, ingress and load balancer endpoints:
 
    -  In this example, we'll go with Debian 11 iso.
-   -  We can download it via the official website: https://www.debian.org/distrib/netinst
+   -  You can download it via the official website: https://www.debian.org/distrib/netinst
    -  For quick download, you can [click here to download debian 11.6.0-amd64-netinst](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.6.0-amd64-netinst.iso), because that's what we'll be working with.
 
 2. Download the pull secret from the [RedHat OpenShift Cluster Manager](https://cloud.redhat.com/openshift)
