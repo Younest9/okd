@@ -80,10 +80,10 @@
 
 3. Move the openshift-install tar.gz file to it, in addition of the pull secret that you downloaded it from the RedHat Cluster Manager using this command:
 
-  ```bash
+   ```bash
    scp ~/Downloads/<openshift-install_tar.gz_file_name> ~/Downloads/<pull_secret>  root@<IP_ADDRESS>:/root/
    ```
-4. 1. SSH to the machine
+4. SSH to the machine
 
    ```bash
    ssh root@<IP_ADDRESS>
@@ -158,33 +158,32 @@
 10. Set a Static IP for the network interface :
    The /etc/network/interfaces[/file] contains network interface configuration information for Debian Linux. Hence, edit the file:
    
-   ```bash
-   sudo nano /etc/network/interfaces
-   ```
+    ```bash
+    sudo nano /etc/network/interfaces
+    ```
    
    Look for the primary network interface in the file:
    
    - Example: enp0s5
+        
+        ```bash
+        allow-hotplug enp0s5
+        iface enp0s5 inet dhcp
+        ```
+        Remove dhcp and allow-hotplug lines. Append the following configuration to set up/add new static IP on Debian Linux 10/11. Here is my sample config file:
    
-   ```pre
-   allow-hotplug enp0s5
-   iface enp0s5 inet dhcp
-   ```
-   
-   Remove dhcp and allow-hotplug lines. Append the following configuration to set up/add new static IP on Debian Linux 10/11. Here is my sample config file:
-   
-   ```pre
-   # The loopback network interface
-   auto lo
-   iface lo inet loopback
+        ```bash
+        # The loopback network interface
+        auto lo
+        iface lo inet loopback
 
-   # The primary network interface
-   auto enp0s5
-   iface enp0s5  inet static
-    address 192.168.2.236
-    netmask 255.255.255.0
-    gateway 192.168.2.254
-   ```
+        # The primary network interface
+        auto enp0s5
+        iface enp0s5  inet static
+        address 192.168.2.236
+        netmask 255.255.255.0
+        gateway 192.168.2.254
+        ```
    
 11. Setup DNS and reverse DNS records:
 
@@ -250,17 +249,17 @@
 13. Install & configure Apache Web Server (necessary to download the config files to passe in as arguments in the installation)
   
   - You can install apache on any Linux distro, in our case:
-      ```bash
+        ```bash
       apt install apache2 -y
-      ```
+        ```
 
 14. Install & configure HAProxy
 
    - You can install HAProxy on any Linux distro, in our case:
    
-      ```bash
+        ```bash
       apt -y install haproxy 
-      ```
+        ```
       
    - Modify the config before starting haproxy
    
@@ -268,15 +267,15 @@
    
    - Copy HAProxy config
 
-     ```bash
+      ```bash
      \cp ~/okd/haproxy.cfg /etc/haproxy/haproxy.cfg
-     ```
+      ```
    
    - Enable and start the service
 
-     ```bash
+       ```bash
      setsebool -P haproxy_connect_any 1 # SELinux name_bind access
      systemctl enable haproxy
      systemctl start haproxy
      systemctl status haproxy
-     ```
+       ```
