@@ -1,6 +1,6 @@
-# OKD 4 Bare Metal Install - User Provisioned Infrastructure (UPI)
+# OKD Bare Metal Install - User Provisioned Infrastructure (UPI)
 
-- [OKD 4 Bare Metal Install - User Provisioned Infrastructure (UPI)](#OKD-4-bare-metal-install---user-provisioned-infrastructure-upi)
+- [OKD Bare Metal Install - User Provisioned Infrastructure (UPI)](#OKD-4-bare-metal-install---user-provisioned-infrastructure-upi)
   - [Architecture Diagram](#architecture-diagram)
   - [Download Software](#download-software)
   - [Prepare the 'Bare Metal' environment](#prepare-the-bare-metal-environment)
@@ -32,7 +32,7 @@
    -  Select 'Run on Bare Metal'
    -  Download Pull secret
    
-      - Using a pull secret from the Red Hat OpenShift Cluster Manager is not required. You can use a pull secret for another private registry. Or, if you do not need the cluster to pull images from a private registry, you can use {"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}} as the pull secret when prompted during the installation.
+      - Using a pull secret from the Red Hat OpenShift Cluster Manager is not required. You can use a pull secret for another private registry. Or, if you do not need the cluster to pull images from a private registry, you can use ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` as the pull secret when prompted during the installation.
       
 
       - If you do not use the pull secret from the Red Hat OpenShift Cluster Manager:
