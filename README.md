@@ -196,7 +196,7 @@
       ; Control Plane Nodes
       cp-1.<cluster_name>.<base_domain>.         IN      A      <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
       cp-2.<cluster_name>.<base_domain>.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-      cp-3.okd.<cluster_name>.<base_domain>.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+      cp-3.<cluster_name>.<base_domain>.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
       ; OpenShift Internal - Load balancer
       api.<cluster_name>.<base_domain>.        IN    A    <the_static_ip_address_we_setup>
