@@ -1,3 +1,18 @@
+# Overview 
+
+- OKD is a distribution of Kubernetes optimized for continuous application development and multi-tenant deployment
+
+- OKD embeds Kubernetes and extends it with security and other integrated concepts
+
+- OKD adds developer and operations-centric tools on top of Kubernetes to enable rapid application development, easy deployment and scaling, and long-term lifecycle maintenance for small and large teams
+
+- OKD is also referred to as Origin in GitHub and in the documentation
+
+- OKD is a sibling Kubernetes distribution to Red Hat OpenShift
+
+# Difference between OKD and OCP (Openshift Container Platform)
+ The difference between OKD et OCP (Openshift Container Platform) is that OKD is a community supported and totally free to use and modify version of Kubernetes (somewhat similar to Fedora compared to RHEL in terms of being upstream of the commercial product) and it uses Fedora CoreOS as the base OS for the cluster, on the other hand, OCP (Openshift Container Platform) is a subscription-based hybrid cloud enterprise Kubernetes platform that is supported by Red Hat, and it uses Redhat CoreOS.
+
 # OKD Bare Metal Install - User Provisioned Infrastructure (UPI)
 
 - [OKD Bare Metal Install - User Provisioned Infrastructure (UPI)](#OKD-4-bare-metal-install---user-provisioned-infrastructure-upi)
