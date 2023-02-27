@@ -11,7 +11,7 @@
   - [Remove the Bootstrap Node](#remove-the-bootstrap-node)
   - [Wait for installation to complete](#wait-for-installation-to-complete)
   - [Join Worker Nodes](#join-worker-nodes)
-  - [Access the OKD Console](#access-the-OKD-console)
+  - [Access the OpenShift Console](#access-the-openshift-console)
   
   
 ## Architecture Diagram
@@ -424,3 +424,16 @@
    ```bash
    watch -n5 oc get nodes
    ```
+
+## Access the OpenShift Console
+
+1. Wait for the 'console' Cluster Operator to become available
+
+   ```bash
+   oc get co
+   ```
+   
+2. Navigate to the OpenShift Console URL (https://console-openshift-console.apps.<Cluster_name>.<Base_domain>) and log in as the 'admin' user
+
+   > You will get self signed certificate warnings that you can ignore
+   > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
