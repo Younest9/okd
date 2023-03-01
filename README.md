@@ -1,4 +1,5 @@
-# Overview 
+# OKD
+## Overview 
 
 - OKD is a distribution of Kubernetes optimized for continuous application development and multi-tenant deployment
 
@@ -10,10 +11,10 @@
 
 - OKD is a sibling Kubernetes distribution to Red Hat OpenShift
 
-# Difference between OKD and OCP (Openshift Container Platform)
+## Difference between OKD and OCP (Openshift Container Platform)
  The difference between OKD et OCP (Openshift Container Platform) is that OKD is a community supported and totally free to use and modify version of Kubernetes (somewhat similar to Fedora compared to RHEL in terms of being upstream of the commercial product) and it uses Fedora CoreOS as the base OS for the cluster, on the other hand, OCP (Openshift Container Platform) is a subscription-based hybrid cloud enterprise Kubernetes platform that is supported by Red Hat, and it uses Redhat CoreOS.
 
-# OKD Bare Metal Install - User Provisioned Infrastructure (UPI)
+## OKD Bare Metal Install - User Provisioned Infrastructure (UPI)
 
 - [OKD Bare Metal Install - User Provisioned Infrastructure (UPI)](#OKD-4-bare-metal-install---user-provisioned-infrastructure-upi)
   - [Architecture Diagram](#architecture-diagram)
@@ -29,11 +30,11 @@
   - [Access the OpenShift Console](#access-the-openshift-console)
   
   
-## Architecture Diagram
+### Architecture Diagram
 
 ![Architecture Diagram](./diagram/Architecture.png)
 
-## Download Software
+### Download Software
 
 1. Download any Linux based OS you want, this will server as the api, ingress and load balancer endpoints:
 
@@ -58,7 +59,7 @@
 
 3. When you install an OKD cluster, you download the installation program ([the openshift-install tar.gz file](https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-02-18-033438/openshift-install-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz)) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
 
-## Prepare the 'Bare Metal' environment
+### Prepare the 'Bare Metal' environment
 
 1. Prepare 3 Control Plane physical or virtual machines with minimum settings:
 
@@ -83,7 +84,7 @@
    
 4. Write down all MAC addresses of all machines.
 
-## Configure Environmental Services
+### Configure Environmental Services
 
 1. Install the OS that you chose on the services machine, in our case it will be debian 11.
 
@@ -291,7 +292,7 @@
      systemctl status haproxy
        ```
 
-## Generate and host install files
+### Generate and host install files
 
 1. Generate an SSH key pair keeping all default options
 
@@ -360,7 +361,7 @@
    ```bash
    curl localhost/okd/
    ```
-## Deploy OKD
+### Deploy OKD
 
 1. Power on the bootstrap host and cp-# hosts
 
@@ -374,7 +375,7 @@
     sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign --insecure --insecure-ignition
     ```
 
-## Monitor the Bootstrap Process
+### Monitor the Bootstrap Process
 
 1. You can monitor the bootstrap process from the okd-svc host at different log levels (debug, error, info)
 
@@ -384,7 +385,7 @@
 
 2. Once bootstrapping is complete the okd-boostrap node [can be removed](#remove-the-bootstrap-node)
 
-## Remove the Bootstrap Node
+### Remove the Bootstrap Node
 
 1. Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file
 
@@ -397,7 +398,7 @@
 
 2. The bootstrap host can now be safely shutdown and deleted, the host is no longer required
 
-## Wait for installation to complete
+### Wait for installation to complete
 
 > IMPORTANT: if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
@@ -408,7 +409,7 @@
    ```
 1. Continue to join the worker nodes to the cluster in a new tab whilst waiting for the above command to complete
 
-## Join Worker Nodes
+### Join Worker Nodes
 
 1. Setup 'oc' and 'kubectl' clients on the ocp-svc machine
 
@@ -440,7 +441,7 @@
    watch -n5 oc get nodes
    ```
 
-## Access the OpenShift Console
+### Access the OpenShift Console
 
 1. Wait for the 'Console' Cluster Operator to become available
 
