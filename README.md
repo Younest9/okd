@@ -64,15 +64,15 @@
 1. Prepare 3 Control Plane physical or virtual machines with minimum settings:
 
    - 4 CPU
-   - 16 GB RAM (8 GB when testing is alright)
-   - 100 GB Storage (50GB is fine when testing)
+   - 16 GB RAM
+   - 100 GB Storage
    - NIC connected to the internet, and on the same network as all other machines
    
 2. Prepare a Bootstrap physical or virtual machine (it will be deleted once installation completes) with minimum settings:
 
    - 4 CPU
-   - 16 GB RAM (8 GB when testing is alright)
-   - 100 GB Storage (50GB is fine when testing)
+   - 16 GB RAM
+   - 100 GB Storage
    - NIC connected to the internet, and on the same network as all other machines
 
 3. Prepare a Services physical or virtual machine with minimum settings:
