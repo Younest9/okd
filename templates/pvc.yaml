@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: <pvc_name>
+  namespace: <namespace_name>
+spec:
+  accessModes:
+    - ReadWriteOnce # ReadWriteMany - ReadOnlyMany
+  selector:
+    matchLabels:
+      app: <label>
+  resources:
+    requests:
+      storage: <size>Gi # Must be under or equal to the size of the pv
