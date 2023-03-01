@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: <name_pv>
+  labels:
+    app: <label>
 spec:
   capacity:
     storage: <size>Gi
@@ -11,6 +13,9 @@ spec:
   - ReadWriteOnce #ReadWriteMany - ReadOnlyMany
   persistentVolumeReclaimPolicy: Delete # Retain
   storageClassName: <storage_class_name>
+  claimRef:
+    namespace: <namespace_name_pvc>
+    name: <pvc_name>
   local:
     path: /path/to/dir or /path/to/file
   nodeAffinity:
