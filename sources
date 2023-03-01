@@ -1,0 +1,6 @@
+https://docs.openshift.com/container-platform/4.10/authentication/managing-security-context-constraints.html
+https://docs.openshift.com/container-platform/4.3/authentication/using-rbac.html
+https://cloud.redhat.com/blog/managing-sccs-in-openshift
+https://docs.okd.io/3.11/install_config/persistent_storage/pod_security_context.html#install-config-persistent-storage-pod-security-context
+https://docs.openshift.com/container-platform/4.9/networking/ingress-operator.html#:~:text=The%20Ingress%20Operator%20makes%20it,Route%20and%20Kubernetes%20Ingress%20resources.
+https://kubernetes.io/fr/docs/concepts/storage/volumes/
