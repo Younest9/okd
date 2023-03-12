@@ -129,12 +129,6 @@
 
 7. Update the OS so we get the latest packages for each of the services we are about to install
 
-   - Fedora based OS
-   
-   ```bash
-   dnf update -y
-   ```
-   
    - Debian based OS
    
    ```bash
@@ -142,12 +136,6 @@
    ```
    
 8. Install Git
-   
-   - Fedora based OS
-   
-   ```bash
-   dnf install git -y
-   ```
    
    - Debian based OS
    
