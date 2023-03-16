@@ -129,15 +129,12 @@
 
 7. Update the OS so we get the latest packages for each of the services we are about to install
 
-   - Debian based OS
-   
    ```bash
    apt-get update && apt-get upgrade -y
    ```
    
 8. Install Git
    
-   - Debian based OS
    
    ```bash
    apt-get install git -y
