@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: <name_pv>
+  name: ssl
   labels:
-    app: <label>
+    app: fibi
 spec:
   capacity:
-    storage: <size>Gi
+    storage: 1Gi
   # le champ volumeMode requiert l'activation de la "feature gate" Alpha BlockVolume
   volumeMode: Filesystem # Block
   accessModes:
   - ReadWriteOnce #ReadWriteMany - ReadOnlyMany
-  persistentVolumeReclaimPolicy: Delete # Retain
-  storageClassName: <storage_class_name>
+  persistentVolumeReclaimPolicy: Retain  # Delete 
+  storageClassName: manual
   claimRef:
-    namespace: <namespace_name_pvc>
-    name: <pvc_name>
+    namespace: test-dev
+    name: ssl
   local:
-    path: /path/to/dir or /path/to/file
+    path: /etc/ssl/private # or /path/to/file
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -25,4 +25,6 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - <hostnames>
+          - okd-cp-1.okd.osupytheas.fr
+          - okd-cp-2.okd.osupytheas.fr
+          - okd-cp-3.okd.osupytheas.fr

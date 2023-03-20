@@ -1,4 +1,5 @@
 ## SSH into a container OKD
+### SSH using rsh command :  ```oc rsh ```
 >#### You should note that the following commands are valid if you have direct access to the kubeconfig file
 
 To open a remote shell session to a container, use this command
@@ -52,3 +53,15 @@ To list of global command-line options, use the following command:
 oc options
 ```
 >The last command applies to all commands above.
+
+### SSH using port-forwarding
+
+after some researches, we came to a single deduction: <strong>We can't do SSH directly on a pod through the route</strong>
+
+though, i made a workaround using port-forwarding that'll make us do SSH to a pod, but using a script that i made : [port-forwarding.sh](./port-forwarding.sh)
+
+Sources: 
+
+[Openshift/origin - About the ssh support in router (GitHub issue #6755)](https://github.com/openshift/origin/issues/6755)
+
+[Opening a Remote Shell to Containers](https://docs.okd.io/3.11/dev_guide/ssh_environment.html)

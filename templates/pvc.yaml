@@ -1,14 +1,14 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: <pvc_name>
-  namespace: <namespace_name>
+  name: ssl
+  namespace: test-dev
 spec:
   accessModes:
     - ReadWriteOnce # ReadWriteMany - ReadOnlyMany
   selector:
     matchLabels:
-      app: <label>
+      app: fibi
   resources:
     requests:
-      storage: <size>Gi # Must be under or equal to the size of the pv
+      storage: 1Gi # Must be under or equal to the size of the pv
