@@ -60,7 +60,7 @@ after some researches, we came to a single deduction: <strong>We can't do SSH di
 
 though, i made a workaround using port-forwarding that'll make us do SSH to a pod, but using a script that i made : [port-forwarding.sh](./port-forwarding.sh)
 
-Sources: 
+<strong>Sources: </strong>
 
 [Openshift/origin - About the ssh support in router (GitHub issue #6755)](https://github.com/openshift/origin/issues/6755)
 
