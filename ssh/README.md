@@ -16,28 +16,28 @@ configs, deployments, jobs, daemon sets, replication controllers and replica set
 
 &nbsp;&nbsp;&nbsp;&nbsp;Examples:  
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Open a shell session on the first container in pod 'foo'
-                                                  ```bash
-                                                  oc rsh foo
-                                                  ```
+  ```bash
+  oc rsh foo
+  ```
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Open a shell session on the first container in pod 'foo' and namespace 'bar'
   >(Note that oc client specific arguments must come before the resource name and its arguments)
-                                                  ```bash
-                                                  oc rsh -n bar foo
-                                                  ```
+  ```bash
+  oc rsh -n bar foo
+  ```
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Run the command 'cat /etc/resolv.conf' inside pod 'foo'
-                                                  ```bash
-                                                  oc rsh foo cat /etc/resolv.conf
-                                                  ```
+  ```bash
+  oc rsh foo cat /etc/resolv.conf
+  ```
 
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See the configuration of your internal registry
-                                                  ```bash
-                                                  oc rsh dc/docker-registry cat config.yml
-                                                  ```
+  ```bash
+  oc rsh dc/docker-registry cat config.yml
+  ```
 
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Open a shell session on the container named 'index' inside a pod of your job
-                                                  ```bash
-                                                  oc rsh -c index job/scheduled
-                                                  ```
+  ```bash
+  oc rsh -c index job/scheduled
+  ```
 
 ><b>Options:</b>  
 >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-c, --container='': Container name; defaults to first container  
