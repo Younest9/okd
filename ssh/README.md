@@ -64,4 +64,4 @@ though, i made a workaround using port-forwarding that'll make us do SSH to a po
 
 [Openshift/origin - About the ssh support in router (GitHub issue #6755)](https://github.com/openshift/origin/issues/6755)
 
-[Opening a Remote Shell to Containers](https://docs.okd.io/3.11/dev_guide/ssh_environment.html)
+[Opening a Remote Shell to Containers - Official documentation OKD (docs.okd.io)](https://docs.okd.io/3.11/dev_guide/ssh_environment.html)
