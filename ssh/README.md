@@ -1,5 +1,5 @@
 ## SSH into a container OKD
-### SSH using rsh command :  ```oc rsh ```
+### SSH using rsh command :  ```oc rsh```
 >#### You should note that the following commands are valid if you have direct access to the kubeconfig file
 
 To open a remote shell session to a container, use this command
