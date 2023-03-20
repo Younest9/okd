@@ -56,7 +56,7 @@ oc options
 
 ### SSH using port-forwarding
 
-after some researches, we came to a single deduction: <strong>We can't do SSH directly on a pod through the route</strong>
+After some researches, we came to a single deduction: <strong>We can't do SSH directly on a pod through the route</strong>
 
 though, i made a workaround using port-forwarding that'll make us do SSH to a pod, but using a script that i made : [port-forwarding.sh](./port-forwarding.sh)
 
