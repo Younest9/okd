@@ -195,7 +195,7 @@
       cp-2.<cluster_name>.<base_domain>.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
       cp-3.<cluster_name>.<base_domain>.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
-      ; OpenShift Internal - Load balancer
+      ; OKD Internal - Load balancer
       api.<cluster_name>.<base_domain>.        IN    A    <the_static_ip_address_we_setup>
       api-int.<cluster_name>.<base_domain>.    IN    A    <the_static_ip_address_we_setup>
       *.apps.<cluster_name>.<base_domain>.     IN    A    <the_static_ip_address_we_setup>
@@ -205,7 +205,7 @@
       etcd-1.<cluster_name>.<base_domain>.    IN    A     192.168.22.202 <ip_addresses_for_etcd cluster>
       etcd-2.<cluster_name>.<base_domain>.    IN    A     192.168.22.203 <ip_addresses_for_etcd cluster>
 
-      ; OpenShift Internal SRV records (cluster name = okd)
+      ; OKD Internal SRV records (cluster name = okd)
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-0.okd
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-1.okd
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-2.okd
