@@ -311,10 +311,17 @@
    ~/openshift-install create manifests --dir ~/okd-install
    ```
 
-   > A warning is shown about making the control plane nodes schedulable. It is up to you if you want to run workloads on the Control Plane nodes. If you dont want to you can disable this with:
-   > `sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml`.
+   > A warning is shown about making the control plane nodes schedulable. It is up to you if you want to run workloads on the Control Plane nodes.
+   >
+   > If you dont want to, you can disable it with:
+   > ```bash
+   > sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
+   > ```
+   > 
    > If you want to enable it, you can with:
-   >`sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml`.
+   > ```bash
+   > sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
+   > ```
    > Make any other custom changes you like to the core Kubernetes manifest files.
    
    Generate the Ignition config and Kubernetes auth files
