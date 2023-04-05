@@ -1,15 +1,15 @@
 ## SSH into a container OKD
 ### SSH using rsh command :  ```oc rsh <pod>```
->#### You should note that the following commands are valid if you have direct access to the kubeconfig file
+> You should note that the following commands of `oc rsh` are valid just if you have direct access to the kubeconfig file
 
 To open a remote shell session to a container, use this command
 ```bash
 oc rsh [-c CONTAINER] [flags] (POD | TYPE/NAME) COMMAND [args...]
 ````
 
->This command will attempt to start a shell session in a pod for the specified resource. It works with pods, deployment
-configs, deployments, jobs, daemon sets, replication controllers and replica sets. Any of the aforementioned resources (apart from pods) will be resolved to a ready pod. It will default to the first container if none is specified, and will attempt to use '/bin/sh' as the default shell. You may pass any flags supported by this command before the resource name, and an optional command after the resource name, which will be executed instead of a login shell. A TTY will be automatically allocated if standard input is interactive - use -t and -T to override. A TERM variable is sent to the environment where the shell (or command) will be executed. By default its value is the same as the TERM variable from the local environment; if not set, 'xterm' is used.  
-<b>Note</b>: some containers may not include a shell - use '```oc exec```' if you need to run commands directly.
+> This command will attempt to start a shell session in a pod for the specified resource. It works with pods, deployment configs, deployments, jobs, daemon sets, replication controllers and replica sets. Any of the aforementioned resources (apart from pods) will be resolved to a ready pod. It will default to the first container if none is specified, and will attempt to use '/bin/sh' as the default shell. You may pass any flags supported by this command before the resource name, and an optional command after the resource name, which will be executed instead of a login shell. A TTY will be automatically allocated if standard input is interactive - use -t and -T to override. A TERM variable is sent to the environment where the shell (or command) will be executed. By default its value is the same as the TERM variable from the local environment; if not set, 'xterm' is used.
+>
+><b>Note</b>: some containers may not include a shell - use '```oc exec```' if you need to run commands directly.
 
 <b>Usage:</b>
   
@@ -56,11 +56,23 @@ oc options
 
 ### SSH using port-forwarding
 
-After some researches, we came to a single deduction: <strong>We can't do SSH directly on a pod through the route</strong>
+As you know, you can't SSH into a container using its route, because the router doesn't support SSH.
 
-though, i made a workaround using port-forwarding that'll make us do SSH to a pod, but using a script that i made : [port-forwarding.sh](./port-forwarding.sh)
+Although, I made a workaround by port forwarding the container to my local machine, and then SSH into it.
 
-<strong>Sources: </strong>
+You can use this script : [port-forwarding.sh](./port-forwarding.sh)
+
+After running the script, you can SSH into the container using the following command:
+```bash
+ssh -p <port> user@localhost
+```
+>**Note:**
+>
+>Replace <port> with the port you specified in the script
+>
+>Replace user with the user you specified in the openssh server configuration.
+
+#### Sources
 
 [Openshift/origin - About the ssh support in router (GitHub issue #6755)](https://github.com/openshift/origin/issues/6755)
 
