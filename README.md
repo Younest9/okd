@@ -167,7 +167,7 @@
         allow-hotplug enp0s5
         iface enp0s5 inet dhcp
         ```
-        Remove dhcp and allow-hotplug lines. Append the following configuration to set up/add new static IP on Debian Linux 10/11. Here is my sample config file:
+        Remove dhcp and allow-hotplug lines. Append the following configuration to set up/add new static IP on Debian Linux 10/11. Here is a sample config file:
    
         ```bash
         # The loopback network interface
