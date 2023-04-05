@@ -312,9 +312,9 @@
    ```
 
    > A warning is shown about making the control plane nodes schedulable. It is up to you if you want to run workloads on the Control Plane nodes. If you dont want to you can disable this with:
-   > `sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/ocp-install/manifests/cluster-scheduler-02-config.yml`.
+   > `sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml`.
    > If you want to enable it, you can with:
-   >`sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/ocp-install/manifests/cluster-scheduler-02-config.yml`.
+   >`sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml`.
    > Make any other custom changes you like to the core Kubernetes manifest files.
    
    Generate the Ignition config and Kubernetes auth files
@@ -338,10 +338,10 @@
 8. Change permissions of the web server directory
 
    ```bash
-   chmod +r /var/www/html/okd/*
+   chmod +r /var/www/okd/*
    ```
    
-9. Confirm you can see all files added to the `/var/www/html/okd/` dir through Apache
+9. Confirm you can see all files added to the `/var/www/okd/` dir through Apache
 
    ```bash
    curl localhost/okd/
