@@ -20,5 +20,5 @@ networking:
 platform:
   none: {}
 fips: false
-pullSecret: '<pull_secret_downloaded_content> or {"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}'
-sshKey: "ssh-ed25519 AAAA..."
+pullSecret: '<pull_secret_downloaded_content|{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}>'
+sshKey: "<ssh_key>"
