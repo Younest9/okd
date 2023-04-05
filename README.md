@@ -32,6 +32,8 @@
   
 ### Architecture Diagram
 
+It's the same architecture as the OpenShift Container Platform, but without the RedHat subscription and without the RedHat CoreOS.
+
 ![Architecture Diagram](./diagram/Architecture.png)
 
 ### Download Software
@@ -50,6 +52,7 @@
    -  Download Pull secret
    
       >Using a pull secret from the Red Hat OpenShift Cluster Manager is not required. You can use a pull secret for another private registry. Or, if you do not need the cluster to pull images from a private registry, you can use ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` as the pull secret when prompted during the installation.
+      >
       >If you do not use the pull secret from the Red Hat OpenShift Cluster Manager:
          > - Red Hat Operators are not available.
          > - The Telemetry and Insights operators do not send data to Red Hat.
@@ -330,13 +333,13 @@
    ~/openshift-install create ignition-configs --dir ~/okd-install/
    ```
    
-6. Create a hosting directory to serve the configuration files for the OKD booting process
+6. Create a hosting directory to serve the configuration files for the OKD booting process where the web server will be hosted
 
    ```bash
    mkdir /var/www/okd
    ```
 
-7. Copy all generated install files to the new web server directory
+7. Copy all generated install files to that directory
 
    ```bash
    cp  ~/okd-install/master.ign  ~/okd-install/bootstrap.ign  ~/okd-install/worker.ign  /var/www/okd/
@@ -413,7 +416,8 @@
 
 1. View and approve pending CSRs
 
-   > Note: Once you approve the first set of CSRs additional 'kubelet-serving' CSRs will be created. These must be approved too.
+   > **Note:** Once you approve the first set of CSRs additional 'kubelet-serving' CSRs will be created. These must be approved too.
+   >
    > If you do not see pending requests wait until you do.
 
    ```bash
@@ -444,4 +448,5 @@
 2. Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'admin' user
 
    > You will get self signed certificate warnings that you can ignore
+   >
    > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
