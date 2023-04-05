@@ -395,7 +395,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
 ### Wait for installation to complete
 
-> IMPORTANT: if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
+> **IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
 1. Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event
 
@@ -462,6 +462,6 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 - [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring Load Balancing](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-load-balancing_installing-bare-metal-network-customizations)
 - [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring Static IP Addresses](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-static_installing-bare-metal-network-customizations)
 - [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring a Firewall](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-firewall_installing-bare-metal-network-customizations)
-- GitHub user ryanhay repository : [ryanhay/ocp4-metal-install](https://github.com/ryanhay/ocp4-metal-install)
+- [GitHub repository - ryanhay/ocp4-metal-install](https://github.com/ryanhay/ocp4-metal-install)
 - [OKD 4.3 Bare Metal UPI - Configuring SCC](https://docs.okd.io/latest/authentication/managing-security-context-constraints.html)
 - [OKD 4.3 Bare Metal UPI - Security](https://docs.okd.io/latest/security/)
