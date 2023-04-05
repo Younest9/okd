@@ -450,3 +450,18 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    > You will get self signed certificate warnings that you can ignore
    >
    > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
+
+#### Sources
+
+- [OKD 4.3 Architecture](https://docs.okd.io/latest/architecture/architecture.html)
+- [OKD 4.3 Installation Guide](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal.html)
+- [OKD 4.3 Bare Metal UPI](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html)
+- [OKD 4.3 Bare Metal UPI - Advanced Networking](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network_installing-bare-metal-network-customizations)
+- [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring DHCP](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-dhcp_installing-bare-metal-network-customizations)
+- [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring DNS](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-dns_installing-bare-metal-network-customizations)
+- [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring Load Balancing](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-load-balancing_installing-bare-metal-network-customizations)
+- [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring Static IP Addresses](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-static_installing-bare-metal-network-customizations)
+- [OKD 4.3 Bare Metal UPI - Advanced Networking - Configuring a Firewall](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal-network-customizations.html#installation-user-infra-machines-static-network-firewall_installing-bare-metal-network-customizations)
+- GitHub user ryanhay repository : [ryanhay/ocp4-metal-install](https://github.com/ryanhay/ocp4-metal-install)
+- [OKD 4.3 Bare Metal UPI - Configuring SCC](https://docs.okd.io/latest/authentication/managing-security-context-constraints.html)
+- [OKD 4.3 Bare Metal UPI - Security](https://docs.okd.io/latest/security/)
