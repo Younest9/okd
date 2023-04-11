@@ -78,6 +78,13 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    - 100 GB Storage
    - NIC connected to the internet, and on the same network as all other machines
 
+3. Prepare some Worker physical or virtual machines with minimum settings (recommended to have at least 2, but you can have as many as you want, even 0):
+
+   - 4 CPU
+   - 16 GB RAM
+   - 100 GB Storage
+   - NIC connected to the internet, and on the same network as all other machines
+
 3. Prepare a Services physical or virtual machine with minimum settings:
    
    - Name : svc
@@ -204,11 +211,11 @@ It's the same architecture as the OpenShift Container Platform, but without the 
       *.apps.<cluster_name>.<base_domain>.     IN    A    <the_static_ip_address_we_setup>
 
       ; ETCD Cluster
-      etcd-0.<cluster_name>.<base_domain>.    IN    A     192.168.22.201 <ip_addresses_for_etcd cluster>
-      etcd-1.<cluster_name>.<base_domain>.    IN    A     192.168.22.202 <ip_addresses_for_etcd cluster>
-      etcd-2.<cluster_name>.<base_domain>.    IN    A     192.168.22.203 <ip_addresses_for_etcd cluster>
+      etcd-0.<cluster_name>.<base_domain>.    IN    A     <ip_addresses_for_etcd cluster>
+      etcd-1.<cluster_name>.<base_domain>.    IN    A     <ip_addresses_for_etcd cluster>
+      etcd-2.<cluster_name>.<base_domain>.    IN    A     <ip_addresses_for_etcd cluster>
 
-      ; OKD Internal SRV records (cluster name = okd)
+      ; OKD Internal SRV records
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-0.okd
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-1.okd
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-2.okd
@@ -363,7 +370,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
     After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso
     ```bash
     # Bootstrap Node - bootstrap
-    sudo coreos-installer install /dev/sda -I htttp://<Host_apache_server>/okd/bootstrap.ign --insecure --insecure-ignition
+    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign --insecure --insecure-ignition
     ```
     ```bash
     # Each of the Control Plane Nodes - cp-\#
@@ -406,7 +413,15 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
 ### Join Worker Nodes
 
-1. Setup 'oc' and 'kubectl' clients on the ocp-svc machine
+1. Power on the worker hosts (if you have any)
+   
+    After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso
+    ```bash
+    # Each of the Worker Nodes - worker-\#
+    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
+   ```
+
+2. Setup 'oc' and 'kubectl' clients on the ocp-svc machine
 
    ```bash
    export KUBECONFIG=~/okd-install/auth/kubeconfig
@@ -414,7 +429,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    oc get nodes
    ```
 
-1. View and approve pending CSRs
+3. View and approve pending CSRs
 
    > **Note:** Once you approve the first set of CSRs additional 'kubelet-serving' CSRs will be created. These must be approved too.
    >
@@ -429,7 +444,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
    ```
 
-1. Watch and wait for the Worker Nodes to join the cluster and enter a 'Ready' status
+4. Watch and wait for the Worker Nodes to join the cluster and enter a 'Ready' status
 
    > This can take 5-10 minutes
 
