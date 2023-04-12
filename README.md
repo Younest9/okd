@@ -62,6 +62,8 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
 3. When you install an OKD cluster, you download the installation program ([the openshift-install tar.gz file](https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-02-18-033438/openshift-install-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz)) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
 
+4. Download the Fedora CoreOS image (.iso et .raw.xz) from [the Fedora CoreOS Official Website](https://getfedora.org/en/coreos/download)
+
 ### Prepare the 'Bare Metal' environment
 
 1. Prepare 3 Control Plane physical or virtual machines with minimum settings:
@@ -163,7 +165,8 @@ It's the same architecture as the OpenShift Container Platform, but without the 
       ```
 
 10. Set a Static IP for the network interface :
-   The /etc/network/interfaces[/file] contains network interface configuration information for Debian Linux. Hence, edit the file:
+   The /etc/network/interfaces 
+   file contains network interface configuration information for Debian Linux. Hence, edit the file:
    
     ```bash
     sudo nano /etc/network/interfaces
@@ -343,22 +346,26 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 6. Create a hosting directory to serve the configuration files for the OKD booting process where the web server will be hosted
 
    ```bash
-   mkdir /var/www/okd
+   mkdir /var/www/html/okd
    ```
 
-7. Copy all generated install files to that directory
+7. Copy all generated install files and the raw.xz image to that directory
 
    ```bash
-   cp  ~/okd-install/master.ign  ~/okd-install/bootstrap.ign  ~/okd-install/worker.ign  /var/www/okd/
+   cp  ~/okd-install/*  /var/www/html/okd/
    ```
-
-8. Change permissions of the web server directory
+8. Copy the raw.xz image to the web server directory (rename it to fcos to shorten the file name)
 
    ```bash
-   chmod +r /var/www/okd/*
+   cp  ~/okd/rhcos-4.7.0-x86_64-metal.x86_64.raw.xz  /var/www/html/okd/fcos
+   ```
+9. Change permissions of the web server directory
+
+   ```bash
+   chmod +r /var/www/html/okd/*
    ```
    
-9. Confirm you can see all files added to the `/var/www/okd/` dir through Apache
+10. Confirm you can see all files added to the `/var/www/html/okd/` dir through Apache
 
    ```bash
    curl localhost/okd/
@@ -367,14 +374,14 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
 1. Power on the bootstrap host and cp-# hosts
 
-    After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso
+    After booting up to the live ISO, use the following command then just reboot after it finishes and make sure you remove the attached .iso
     ```bash
     # Bootstrap Node - bootstrap
-    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign --insecure --insecure-ignition
+    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
     ```
     ```bash
     # Each of the Control Plane Nodes - cp-\#
-    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign --insecure --insecure-ignition
+    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
     ```
 
 ### Monitor the Bootstrap Process
