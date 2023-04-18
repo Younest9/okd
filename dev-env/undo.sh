@@ -1,5 +1,7 @@
-echo "Delete the code-server deployment, service, route, and persistent volume claim (pvc) and persistent volume (pv) in the $(oc project -q) project"
+echo "Delete the code-server deployment, service, route, and persistent volume claim (pvc) in the $(oc project -q) project"
 oc delete -f deploy.yaml -f svc.yaml -f route.yaml -f pvc.yaml -n test
+
+echo "Delete the persistent volume (pv)"
 oc delete -f pv.yaml
 
 echo "Delete the unnecessary files"
