@@ -42,7 +42,8 @@ else
 fi
 
 echo "Available projects:"
-oc projects
+oc projects | grep -v NAME | grep -v openshift | grep -v kube- | grep -v "You have access to the following projects and can switch between them with ' project <projectname>':" | grep -v "Using project"
+echo "You are currently connected to the project: $(oc project -q)"
 echo ""
 echo "Do you want to create a new project ? (yes/no)"
 read create
@@ -56,9 +57,21 @@ if [[ $create == "yes" ]]; then
     oc new-project $project --display-name="$display" --description="$description"
     oc project $project
 else
-    echo "Please enter the name of the project you want to connect to"
+  while true; do
+    echo "Do you want to change the current project ? (yes/no)"
+    read change
+    if [[ $change == "no" ]]; then
+        break
+    fi
+    echo "Please enter the name of the name of the project that you want to connect to: "
     read project
+    if $(oc project $project > /dev/null 2>&1); then
+        echo "Project $project does not exist"
+        continue
+    fi
     oc project $project
+    break
+  done
 fi
 
 
@@ -73,8 +86,7 @@ echo "Creating code-server deployment..."
 
 read -p "Choose a password for code-server: " password
 
-echo "
-apiVersion: v1
+echo "apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: vscode-config
@@ -104,8 +116,7 @@ spec:
             - worker-1.okd.osupytheas.fr
             - worker-2.okd.osupytheas.fr
 " > pv.yaml
-echo "
-apiVersion: v1
+echo "apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: vscode-config
@@ -122,8 +133,7 @@ spec:
     requests:
       storage: 2Gi
 " > pvc.yaml
-echo "
-kind: Deployment
+echo "kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: code-server
@@ -198,8 +208,7 @@ spec:
           persistentVolumeClaim:
             claimName: vscode-config
 " > deploy.yaml
-echo "
-apiVersion: v1
+echo "apiVersion: v1
 kind: Service
 metadata:
   name: code-server
@@ -216,8 +225,7 @@ spec:
           name: 8443-tcp
     type: ClusterIP
 " > svc.yaml
-echo "
-apiVersion: route.openshift.io/v1
+echo "apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: code-server
@@ -225,7 +233,7 @@ metadata:
   labels:
     app: code-server
 spec:
-    host: code-server.$project.apps.okd.osupytheas.fr # Or any other domain you want
+    host: code-server.$project.apps.okd.osupytheas.fr # Or any other domain you want (you will need to add it to your DNS server)
     port:
         targetPort: 8443
     tls:
@@ -240,9 +248,54 @@ spec:
 
 oc apply -f deploy.yaml -f svc.yaml -f route.yaml -f pv.yaml -f pvc.yaml
 
+if [ $? -eq 0 ]; then
+    echo "Successfully deployed code-server"
+else
+    echo "Failed to deploy code-server"
+    exit 1
+fi
+echo ""
+echo "You can now access your code-server instance at https://code-server.$project.apps.okd.osupytheas.fr"
 
-echo "Deployment created"
-
-echo "You can now access your code-server instance at https://code-server.dev.apps.okd.osupytheas.fr"
 echo "The default password is 'password'"
 
+echo "You can change it by running the following command:"
+echo "oc set env deployment/code-server PASSWORD=<your_password> -n $project"
+
+echo ""
+echo "GitLab runner deployment"
+
+echo "Installing helm..."
+echo "Install dependencies"
+if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "debian" || $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "ubuntu"; then
+    $SUDO apt-get update
+    $SUDO apt-get install apt-transport-https --yes
+    $SUDO apt-get install ca-certificates --yes
+    $SUDO apt-get install curl --yes
+    $SUDO apt-get install gnupg --yes
+    $SUDO apt-get install lsb-release --yes
+    curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | $SUDO tee /usr/share/keyrings/helm.gpg > /dev/null
+    echo "Add helm repository"
+    echo "deb [signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | $SUDO tee /etc/apt/sources.list.d/helm-stable-debian.list
+    $SUDO apt-get update
+    $SUDO apt-get install helm --yes
+fi
+if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "fedora"; then
+    $SUDO dns install helm --yes
+fi
+if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "centos"; then
+    $SUDO yum install helm --yes
+fi
+
+echo "Helm installed"
+
+echo "Installing gitlab runner..."
+echo "Add gitlab helm repository"
+helm repo add gitlab https://charts.gitlab.io
+helm repo update
+
+echo "Install gitlab runner"
+helm install --namespace gitlab-runner --create-namespace -f values.yaml gitlab-runner gitlab/gitlab-runner
+echo "Gitlab runner installed"
+
+echo "GitLab runner deployed"
