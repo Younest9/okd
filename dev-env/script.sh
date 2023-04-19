@@ -1,41 +1,104 @@
 #!/bin/bash
 
 SUDO=''
-if (( $EUID != 0 )); then
+if [[ $EUID != 0 ]] ; then
     SUDO='sudo'
 fi
 if ! command -v oc &> /dev/null; then
+  if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "debian" ] || [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "ubuntu" ]; then
     $SUDO apt update
     $SUDO apt install wget curl -y
-    $SUDO wget https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-03-18-084815/openshift-client-linux-4.12.0-0.okd-2023-03-18-084815.tar.gz
-    $SUDO tar xzf openshift-client-linux-4.12.0-0.okd-2023-03-18-084815.tar.gz
+    $SUDO wget https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-04-16-041331/openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz
+    $SUDO tar xzf openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz
     $SUDO mv kubectl oc /usr/local/bin/
-    $SUDO rm openshift-client-linux-4.12.0-0.okd-2023-03-18-084815.tar.gz README.md
+    $SUDO rm openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz README.md
+  else
+    if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "centos" ]; then
+    $SUDO yum install wget curl -y
+    $SUDO wget https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-04-16-041331/openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz
+    $SUDO tar xzf openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz
+    $SUDO mv kubectl oc /usr/local/bin/
+    $SUDO rm openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz README.md
+    else
+        if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "fedora" ]; then
+    $SUDO dnf install wget curl -y
+    $SUDO wget https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-04-16-041331/openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz
+    $SUDO tar xzf openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz.gz
+    $SUDO mv kubectl oc /usr/local/bin/
+    $SUDO rm openshift-client-linux-4.12.0-0.okd-2023-04-16-041331.tar.gz README.md
+        fi
+    fi
+  fi
 fi
+
+# Function to print asterisks for each character entered
+# mask_input() {
+    # # Initialize password variable
+    # password=''
+    # # Allowed characters
+    # allowed_chars='A-Za-z0-9_@./#&+-'
+    # # Read input from either stdin or clipboard
+    # if [[ -t 0 ]]; then
+    #     read -rs -d '' input
+    # else
+    #     input=$(xclip -o -selection clipboard)
+    # fi
+    # # Print newline character to move cursor to next line after pasting input
+    # printf '\n'
+    # # Loop through each character in the input
+    # for (( i=0; i<${#input}; i++ )); do
+    #     char="${input:$i:1}"
+    #     # Break out of loop if Enter key is pressed
+    #     if [[ $char == $'\0' ]]; then
+    #        break
+    #     fi
+    #     # Check if character is the delete key
+    #     if [[ $char == $'\177' ]]; then
+            # Delete the last character from the password string and move the cursor back one space
+    #        if [[ ${#password} -gt 0 ]]; then
+    #            password=${password%?}
+    #            printf '\b \b'
+    #        fi
+    #     # Check if character is a valid alphanumeric or special character
+    #     elif [[ $char =~ [$allowed_chars] ]]; then
+    #         # Print asterisk for each character entered
+    #         printf '*'
+    #         password+="$char"
+    #     fi
+    # done
+# }
+
+
+
+
+
+
 if [[ $(oc projects 2> /dev/null) == *"You have access to the following projects and can switch between them with ' project <projectname>':"* ]]; then
     echo "User is already logged in"
 else
     echo "Log In to the cluster..."
     echo ""
     while true; do
-        echo "Please enter your username: "
-        read username
-        echo "Please enter your password: "
-        read password
+        read -rep "Please enter your username: " username
+        history -s "$username"
+        printf "Please enter your password: "
+        read -rep "" password
+        history -s "$password"
         echo ""
         echo "Connecting to the cluster using your credentials..."
-        sleep 1
-        echo "..."
-        sleep 1
-        echo "..."
-        sleep 1
-        echo ""
-        oc login -u $username -p $password -s https://api.okd.osupytheas.fr:6443 --insecure-skip-tls-verify > /dev/null 2>&1
-        if [ $? -eq 0 ]; then
+        if [[ "$(oc login -u "$username" -p "$password" -s https://api.okd.osupytheas.fr:6443 --insecure-skip-tls-verify 1> /dev/null)" == *"error"* ]]; then
+            echo "Server is not reachable"
+            echo "Please check that your cluster is running"
+            echo "If your cluster is running, please check the apiserver pods in the openshift-oauth-apiserver namespace"
+            echo "Try Executing this script again after you have fixed the issue"
+            exit 1
+        fi
+        if oc login -u "$username" -p "$password" -s https://api.okd.osupytheas.fr:6443 --insecure-skip-tls-verify > /dev/null 2>&1 ; then
             echo "Successfully logged in"
             break
         else
             echo "Failed to log in to the cluster"
+            echo "Please check your credentials and try again"
             continue
         fi
     done
@@ -45,48 +108,91 @@ echo "Available projects:"
 oc projects | grep -v NAME | grep -v openshift | grep -v kube- | grep -v "You have access to the following projects and can switch between them with ' project <projectname>':" | grep -v "Using project"
 echo "You are currently connected to the project: $(oc project -q)"
 echo ""
-echo "Do you want to create a new project ? (yes/no)"
-read create
-if [[ $create == "yes" ]]; then
-    echo "Please enter the name of the project you want to create"
-    read project
+read -rep "Do you want to create a new project ? [Y/n] : " create
+echo ""
+project=$(oc project -q)
+if  [[ ($create == "yes")  || ($create == "y") || ($create == "O") || ($create == "Y") || ($create == "Yes") || ($create == "YES") || ($create == "Oui") || ($create == "OUI") ]]; then
+    echo "Please enter the name of the project you want to create (required):"
+    read -re project
+    history -s "$project"
     echo "Please enter the display name of the project you want to create (optional)"
-    read display
+    read -re display
+    history -s "$display"
     echo "Please enter the description of the project you want to create (optional)"
-    read description
-    oc new-project $project --display-name="$display" --description="$description"
-    oc project $project
+    read -re description
+    history -s "$description"
+    echo ""
+    oc new-project "$project" --display-name="$display" --description="$description"
+    oc project "$project"
 else
   while true; do
-    echo "Do you want to change the current project ? (yes/no)"
-    read change
-    if [[ $change == "no" ]]; then
+    echo "Current project: $project"
+    echo ""
+    read -rep "Do you want to change the current project ? [Y/n] : " change
+    echo ""
+    if [[ ($change == "no") || ($change == "n") || ($change == "N") || ($change == "No") || ($change == "NO") || ($change == "Non") || ($change == "NON") ]]; then
         break
     fi
-    echo "Please enter the name of the name of the project that you want to connect to: "
-    read project
-    if $(oc project $project > /dev/null 2>&1); then
+    read -rep "Please enter the name of the name of the project that you want to connect to: "  project
+    echo ""
+    if oc project "$project" > /dev/null 2>&1; then
         echo "Project $project does not exist"
         continue
     fi
-    oc project $project
+    oc project "$project"
     break
   done
 fi
 
 
-read -p "Git repository URL: " repo
-read -p "Git repository username: " username
-read -p "Git repository email: " email
-
-oc create secret generic git-creds --from-literal=username=$username --from-literal=email=$email --namespace=$project
-echo "Git credentials secret created"
-
+read -rep "Git repository username: " username
+while true; do
+  read -rep "Git repository email: " email
+  if [[ ($email == "") || ($email != *"@"*) ]]; then
+      echo "email format is invalid"
+      echo "Please enter a valid email"
+      continue
+  else
+      break
+  fi
+done
+while true; do
+  read -rep "Git repository URL (required): " repo
+  if [[ $repo != "" && ( $repo == *".com"* || $repo == *".fr"* ) && $repo == *"git"* && $repo == *"$username"* ]]; then
+      break
+  else
+      echo "Please enter a valid git repository URL"
+      continue
+  fi
+done
+echo ""
+echo "Creating git credentials secret..."
+while true; do
+  if [[ $(oc create secret generic git-creds --from-literal=username="$username" --from-literal=email="$email" --namespace="$project") = *"Error from server (AlreadyExists): secrets \"git-creds\" already exists"* ]]; then
+      echo "Git credentials secret already exists"
+      echo 
+      read -rep "Do you want to update the secret ? [Y/n] : " update
+      if [[ ($update == "yes") || ($update == "y") || ($update == "O") || ($update == "Y") || ($update == "Yes") || ($update == "YES") || ($update == "Oui") || ($update == "OUI") ]]; then
+          oc delete secret git-creds --namespace="$project"
+          oc create secret generic git-creds --from-literal=username="$username" --from-literal=email="$email" --namespace="$project"
+      fi
+      break
+  fi
+  if [[ $(oc create secret generic git-creds --from-literal=username="$username" --from-literal=email="$email" --namespace="$project") == *"error: failed to create secret Unauthorized"* ]]; then
+      echo "Failed to create secret"
+      echo "Server is not reachable or you have been disconnected from the cluster"
+      exit 1
+  fi
+  echo "Git credentials secret created"
+  break
+done
+echo ""
 echo "Creating code-server deployment..."
 
-read -p "Choose a password for code-server: " password
+read -rep "Choose a password for code-server: " password
 
-echo "apiVersion: v1
+cat <<EOF > pv.yaml
+apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: vscode-config
@@ -115,8 +221,10 @@ spec:
             - okd-cp-3.okd.osupytheas.fr
             - worker-1.okd.osupytheas.fr
             - worker-2.okd.osupytheas.fr
-" > pv.yaml
-echo "apiVersion: v1
+EOF
+
+cat <<EOF > pvc.yaml
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: vscode-config
@@ -132,8 +240,9 @@ spec:
   resources:
     requests:
       storage: 2Gi
-" > pvc.yaml
-echo "kind: Deployment
+EOF
+cat <<EOF > deploy.yaml
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: code-server
@@ -207,8 +316,9 @@ spec:
         - name: vscode-config
           persistentVolumeClaim:
             claimName: vscode-config
-" > deploy.yaml
-echo "apiVersion: v1
+EOF
+cat <<EOF > svc.yaml
+apiVersion: v1
 kind: Service
 metadata:
   name: code-server
@@ -224,8 +334,9 @@ spec:
           targetPort: 8443
           name: 8443-tcp
     type: ClusterIP
-" > svc.yaml
-echo "apiVersion: route.openshift.io/v1
+EOF
+cat <<EOF > route.yaml
+apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: code-server
@@ -244,11 +355,21 @@ spec:
         name: code-server
         weight: 100
     wildcardPolicy: None
-" > route.yaml
+EOF
 
-oc apply -f deploy.yaml -f svc.yaml -f route.yaml -f pv.yaml -f pvc.yaml
 
-if [ $? -eq 0 ]; then
+while true; do
+  if oc apply -f deploy.yaml -f svc.yaml -f route.yaml -f pv.yaml -f pvc.yaml 2> /dev/null; then
+    break
+  fi
+  echo "Failed to deploy code-server"
+  echo "Server is not reachable or you have been disconnected from the cluster"
+  echo "Trying again in 5 seconds..."
+  sleep 5
+  oc delete -f deploy.yaml -f svc.yaml -f route.yaml -f pv.yaml -f pvc.yaml >/dev/null 2>&1
+  oc apply -f deploy.yaml -f svc.yaml -f route.yaml -f pv.yaml -f pvc.yaml 
+done
+if oc delete -f deploy.yaml -f svc.yaml -f route.yaml -f pv.yaml -f pvc.yaml >/dev/null 2>&1; then
     echo "Successfully deployed code-server"
 else
     echo "Failed to deploy code-server"
@@ -267,7 +388,7 @@ echo "GitLab runner deployment"
 
 echo "Installing helm..."
 echo "Install dependencies"
-if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "debian" || $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "ubuntu"; then
+if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "debian" ] || [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "ubuntu" ]; then
     $SUDO apt-get update
     $SUDO apt-get install apt-transport-https --yes
     $SUDO apt-get install ca-certificates --yes
@@ -280,22 +401,18 @@ if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | he
     $SUDO apt-get update
     $SUDO apt-get install helm --yes
 fi
-if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "fedora"; then
+if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "fedora" ]; then
     $SUDO dns install helm --yes
 fi
-if $(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1) == "centos"; then
+if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "centos" ]; then
     $SUDO yum install helm --yes
 fi
-
 echo "Helm installed"
-
 echo "Installing gitlab runner..."
 echo "Add gitlab helm repository"
 helm repo add gitlab https://charts.gitlab.io
 helm repo update
-
 echo "Install gitlab runner"
-helm install --namespace gitlab-runner --create-namespace -f values.yaml gitlab-runner gitlab/gitlab-runner
+helm install --namespace gitlab-runner --create-namespace -f https://raw.githubusercontent.com/Younest9/okd/main/dev-env/values.yaml gitlab-runner gitlab/gitlab-runner
 echo "Gitlab runner installed"
-
 echo "GitLab runner deployed"
