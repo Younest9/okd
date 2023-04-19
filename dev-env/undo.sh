@@ -1,3 +1,8 @@
+if oc whoami &> /dev/null; then
+    echo "You are not logged in to the cluster"
+    exit 1
+fi
+
 echo "Delete the code-server deployment, service, route, and persistent volume claim (pvc) in the $(oc project -q) project"
 oc delete -f deploy.yaml -f svc.yaml -f route.yaml -f pvc.yaml -n test
 
