@@ -214,9 +214,9 @@ It's the same architecture as the OpenShift Container Platform, but without the 
       *.apps.<cluster_name>.<base_domain>.     IN    A    <the_static_ip_address_we_setup>
 
       ; ETCD Cluster
-      etcd-0.<cluster_name>.<base_domain>.    IN    A     <ip_addresses_for_etcd cluster>
-      etcd-1.<cluster_name>.<base_domain>.    IN    A     <ip_addresses_for_etcd cluster>
-      etcd-2.<cluster_name>.<base_domain>.    IN    A     <ip_addresses_for_etcd cluster>
+      etcd-0.<cluster_name>.<base_domain>.    IN    A     <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+      etcd-1.<cluster_name>.<base_domain>.    IN    A     <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+      etcd-2.<cluster_name>.<base_domain>.    IN    A     <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
       ; OKD Internal SRV records
       _etcd-server-ssl._tcp.<cluster_name>.<base_domain>.    86400     IN    SRV     0    10    2380    etcd-0.okd
