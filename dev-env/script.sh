@@ -450,7 +450,11 @@ echo "oc set env deployment/code-server PASSWORD=<your_password> -n $project"
 
 echo ""
 echo "GitLab runner deployment"
-
+# If the repo is not a gitlab repo, we don't need to deploy a runner
+if ! echo "$repo" | grep -q "gitlab"; then
+    echo "The repo is not a gitlab repo, no need to deploy a runner"
+    exit 0
+fi
 echo "Installing helm..."
 echo "Install dependencies"
 if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "debian" ] || [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "ubuntu" ]; then
@@ -467,7 +471,7 @@ if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 |
     $SUDO apt-get install helm --yes
 fi
 if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "fedora" ]; then
-    $SUDO dns install helm --yes
+    $SUDO dnf install helm --yes
 fi
 if [ "$(cat /etc/*-release | grep ID | grep -v -e VERSION_ID | cut -d "=" -f 2 | head -1)" = "centos" ]; then
     $SUDO yum install helm --yes
@@ -478,6 +482,11 @@ echo "Add gitlab helm repository"
 helm repo add gitlab https://charts.gitlab.io
 helm repo update
 echo "Install gitlab runner"
-helm install --namespace gitlab-runner --create-namespace -f https://raw.githubusercontent.com/Younest9/okd/main/dev-env/values.yaml gitlab-runner gitlab/gitlab-runner
+# Change the gitlab url if the repo is not hosted on gitlab.com
+if ! $git_url = *"gitlab.com"*; then
+  sed -e "s/gitlabUrl: https:\/\/gitlab.com/gitlabUrl: $git_url" ./values.yaml
+fi
+
+helm install --namespace gitlab-runner --create-namespace -f ./values.yaml gitlab-runner gitlab/gitlab-runner
 echo "Gitlab runner installed"
 echo "GitLab runner deployed"
