@@ -200,21 +200,38 @@ if [[ $git_url == *"/"* ]]; then
     git_url=${git_url%"/"}
 fi
 # Ask if the user wants to create a new git repository
-read -rep "Git username: " username
-read -rep "Git password: " email
-
+# read -rep "Git username: " username
+# read -rep "Git password: " password
+read -rep "Private Access Token: " token
+history -s "$token"
 read -rep "Do you want to create a new git repository ? [Y/n] : " create
 echo ""
 if  [[ ($create == "yes")  || ($create == "y") || ($create == "O") || ($create == "Y") || ($create == "Yes") || ($create == "YES") || ($create == "Oui") || ($create == "OUI") ]]; then
-  read -rep "Git repository name (required): " repo_name
+  while true; do
+    read -rep "Git repository name (required): " repo_name
+    test -z "$repo_name" && echo "Please enter a valid git repository name" && continue
+  done
+
+  history -s "$repo_name"
+  read -rep "Git repository description (optional): " repo_description
+  history -s "$repo_description"
+  echo ""
+
+  # Create the repository
+
+  curl -H "Content-Type: Application/json" https://$git_url/api/v4/projects?private_token=$token -d "{\"name\":\"$repo_name\",\"description\":\"$repo_description\"}"
+  # Create a local git repository and push it to the remote git repository
+
+
+
   mkdir $repo_name
   cd $repo_name
   git init
   touch README.md .gitignore
   git add -A
   git commit -m "Initial commit"
-  git remote add origin https://$username:$password@$git_url/$username/$repo_name.git
-  git push --set-upstream https://$username:$password@$git_url/$username/$repo_name.git
+  git remote add origin https://OKD:$token@$git_url/$username/$repo_name.git
+  git push --set-upstream https://OKD:$token@$git_url/$username/$repo_name.git
   cd ..
   rm -rf $repo_name
   repo="https://$git_url/$username/$repo_name.git"
