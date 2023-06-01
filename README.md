@@ -190,9 +190,9 @@ It's the same architecture as the OpenShift Container Platform, but without the 
         # The primary network interface
         auto enp0s5
         iface enp0s5  inet static
-        address 192.168.2.236
-        netmask 255.255.255.0
-        gateway 192.168.2.254
+            address 192.168.2.236
+            netmask 255.255.255.0
+            gateway 192.168.2.254
         ```
    
 11. Setup DNS and reverse DNS records:
@@ -230,15 +230,15 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    - Reverse DNS Records
     
       ```
-      <the_static_ip_address_we_setup_reversed>      IN    PTR    okd-svc.osupytheas.fr.
-      <the_static_ip_address_we_setup_reversed>      IN    PTR    api.okd.osupytheas.fr.
-      <the_static_ip_address_we_setup_reversed>      IN    PTR    api-int.okd.osupytheas.fr.
+      <the_static_ip_address_we_setup_reversed>      IN    PTR    svc.<cluster_name>.<base_domain>. ;; Optional, if not specified, must set a static IP for the services machine.
+      <the_static_ip_address_we_setup_reversed>      IN    PTR    api.<cluster_name>.<base_domain>.
+      <the_static_ip_address_we_setup_reversed>      IN    PTR    api-int.<cluster_name>.<base_domain>.
       ;
-      <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    okd-bootstrap.okd.osupytheas.fr.
+      <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    bootstrap.<cluster_name>.<base_domain>.
       ;
-      <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    okd-cp-1.<cluster_name>.<base_domain>.
-      <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    okd-cp-2.<cluster_name>.<base_domain>.
-      <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    okd-cp-3.<cluster_name>.<base_domain>.
+      <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-1.<cluster_name>.<base_domain>.
+      <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-2.<cluster_name>.<base_domain>.
+      <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-3.<cluster_name>.<base_domain>.
        ```
       
 12. Configure DHCP
@@ -357,8 +357,9 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 8. Copy the raw.xz image to the web server directory (rename it to fcos to shorten the file name)
 
    ```bash
-   cp  ~/okd/rhcos-4.7.0-x86_64-metal.x86_64.raw.xz  /var/www/html/okd/fcos
+   cp  ~/okd/fedora-coreos-<whatever_version_you_downloaded>.raw.xz  /var/www/html/okd/fcos
    ```
+   > Example: fedora-coreos-38.20230514.3.0-live.x86_64.raw.xz 
 9. Change permissions of the web server directory
 
    ```bash
@@ -370,6 +371,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    ```bash
    curl localhost/okd/
    ```
+   > Note: If you are on the same machine as the haproxy server, you will need to change the port to 8080
 ### Deploy OKD
 
 1. Power on the bootstrap host and cp-# hosts
@@ -383,6 +385,13 @@ It's the same architecture as the OpenShift Container Platform, but without the 
     # Each of the Control Plane Nodes - cp-\#
     sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
     ```
+
+2. Power on the worker nodes
+
+   ```bash
+   # Each of the Worker Nodes - worker-\#
+   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
+   ```
 
 ### Monitor the Bootstrap Process
 
@@ -401,7 +410,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    ```bash
    # Two entries
    nano /etc/haproxy/haproxy.cfg
-   # Restart HAProxy - If you are still watching HAProxy stats console you will see that the boostrap host has been removed from the backends.
+   # Restart HAProxy - If you are still watching HAProxy stats console you will see that the bootstrap host has been removed from the backends.
    systemctl reload haproxy
    ```
 
@@ -416,7 +425,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    ```bash
    ~/openshift-install --dir ~/okd-install wait-for install-complete
    ```
-1. Continue to join the worker nodes to the cluster in a new tab whilst waiting for the above command to complete
+1. Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new tab whilst waiting for the above command to complete
 
 ### Join Worker Nodes
 
@@ -467,7 +476,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    oc get co
    ```
    
-2. Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'admin' user
+2. Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'kubeadmin' user
 
    > You will get self signed certificate warnings that you can ignore
    >
