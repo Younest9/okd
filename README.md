@@ -386,13 +386,6 @@ It's the same architecture as the OpenShift Container Platform, but without the 
     sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
     ```
 
-2. Power on the worker nodes
-
-   ```bash
-   # Each of the Worker Nodes - worker-\#
-   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
-   ```
-
 ### Monitor the Bootstrap Process
 
 1. You can monitor the bootstrap process from the okd-svc host at different log levels (debug, error, info)
