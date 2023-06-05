@@ -341,7 +341,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    > sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
    > ```
    > Make any other custom changes you like to the core Kubernetes manifest files.
-   
+   > If you enable the masters, you can add them to the http and https ingress in the haproxy.cfg file by uncommenting the corresponding lines (lines 86, 87, 88 and 100, 101, 102) in the haproxy.cfg file.
    Generate the Ignition config and Kubernetes auth files
 
    ```bash
