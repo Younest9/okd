@@ -254,6 +254,11 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    - If you are not using a DHCP service:
    
         - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time. These can be passed as boot arguments if you are installing from an ISO image.
+      > You can set a static ip address by editing the network configuartion while live booting the machine.
+      > ```bash	
+      > sudo nmtui-edit
+      > ```
+
         
         - The cluster nodes obtain their hostname through a reverse DNS lookup.
 13. Install & configure Apache Web Server (necessary to download the config files to passe in as arguments in the installation)
@@ -385,6 +390,17 @@ It's the same architecture as the OpenShift Container Platform, but without the 
     # Each of the Control Plane Nodes - cp-\#
     sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
     ```
+    > If you are using static ip addresses, you have to pass --copy-network to the coreos-installer command to copy the network configuration from the live environment to the installed system.
+      > ```bash
+      ># Bootstrap Node - bootstrap
+      > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
+      > ```
+      >```bash
+      ># Each of the Control Plane Nodes - cp-\#
+      >sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://><Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
+      >```
+
+
 
 ### Monitor the Bootstrap Process
 
@@ -429,6 +445,11 @@ It's the same architecture as the OpenShift Container Platform, but without the 
     # Each of the Worker Nodes - worker-\#
     sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
    ```
+   > If you are using static ip addresses, you have to pass --copy-network to the coreos-installer command to copy the network configuration from the live environment to the installed system.
+   > ```bash
+   > # Each of the Worker Nodes - worker-\#
+   > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition --copy-network
+   > ```
 
 2. Setup 'oc' and 'kubectl' clients on the ocp-svc machine
 
