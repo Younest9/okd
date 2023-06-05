@@ -394,7 +394,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    ~/openshift-install --dir ~/okd-install wait-for bootstrap-complete --log-level=debug
    ```
 
-2. Once bootstrapping is complete the okd-boostrap node [can be removed](#remove-the-bootstrap-node)
+2. Once bootstrapping is complete the bootstrap node [can be removed](#remove-the-bootstrap-node)
 
 ### Remove the Bootstrap Node
 
