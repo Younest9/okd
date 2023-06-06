@@ -323,9 +323,9 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    - Line 23 should contain the contents of your pull-secret.txt
    - Line 24 should contain the contents of your '~/.ssh/id_rsa.pub'
 
-   ```bash
-   nano ~/okd-install/install-config.yaml
-   ```
+      ```bash
+      nano ~/okd-install/install-config.yaml
+      ```
 5. Generate Kubernetes manifest files
 
    ```bash
