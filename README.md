@@ -316,7 +316,10 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    ```
    
 4. Update the install-config.yaml with your own pull-secret and ssh key.
-
+   - Line 2 should contain your base domain
+   - Line 10 should contain the number of control plane nodes you want (default is 3)
+   - Line 12 should contain the cluster name
+   - Line 17 should contain the network type (OpenShiftSDN (less features but more reliable) or OVNKubernetes( more features but less reliable))
    - Line 23 should contain the contents of your pull-secret.txt
    - Line 24 should contain the contents of your '~/.ssh/id_rsa.pub'
 
