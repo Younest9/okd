@@ -42,7 +42,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
    -  In this example, we'll go with Debian 11 iso.
    -  You can download it via the official website: https://www.debian.org/distrib/netinst
-   -  For quick download, you can [click here to download debian 11.6.0-amd64-netinst](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.6.0-amd64-netinst.iso), because that's what we'll be working with.
+   -  For quick download, you can [click here to download debian 11.6.0-amd64-netinst](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso), because that's what we'll be working with.
 
 2. Download the pull secret from the [RedHat OpenShift Cluster Manager](https://cloud.redhat.com/openshift)
 
@@ -60,7 +60,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
 
 
-3. When you install an OKD cluster, you download the installation program ([the openshift-install tar.gz file](https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-02-18-033438/openshift-install-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz)) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
+3. When you install an OKD cluster, you download the installation program ([the openshift-install tar.gz file](https://github.com/okd-project/okd/releases/download/4.13.0-0.okd-2023-06-24-145750/openshift-install-linux-4.13.0-0.okd-2023-06-24-145750.tar.gz)) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
 
 4. Download the Fedora CoreOS image (.iso et .raw.xz) from [the Fedora CoreOS Official Website](https://getfedora.org/en/coreos/download)
 
@@ -198,6 +198,13 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 11. Setup DNS and reverse DNS records:
 
    - DNS Records:
+   
+      Replace in the following snippets the fields:
+         
+      - cluster_name
+      - base_domain
+      - ip_addresses
+      
   
       ```
       ; Temp Bootstrap Node
@@ -253,7 +260,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
        
    - If you are not using a DHCP service:
    
-        - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time. These can be passed as boot arguments if you are installing from an ISO image.
+        - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time. These can be passed as boot arguments if you are installing from an ISO image (--copy-network flag).
       > You can set a static ip address by editing the network configuartion while live booting the machine.
       > ```bash	
       > sudo nmtui-edit
@@ -289,10 +296,9 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    - Enable and start the service
 
        ```bash
-     setsebool -P haproxy_connect_any 1 # SELinux name_bind access
-     systemctl enable haproxy
-     systemctl start haproxy
-     systemctl status haproxy
+      systemctl enable haproxy
+      systemctl start haproxy
+      systemctl status haproxy
        ```
 
 ### Generate and host install files
