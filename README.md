@@ -47,11 +47,11 @@ The smallest OKD clusters require the following hosts:
 
 | Hosts | Description |
 | --- | --- |
-| One temporary bootstrap machine | The cluster requires the bootstrap machine to deploy the OKD cluster on the three control plane machines. You can remove the bootstrap machine after you install the cluster. |
-| Three control plane machines | The control plane machines run the Kubernetes and OKD services that form the control plane. |
+| One temporary bootstrap machine | The cluster requires the bootstrap machine to deploy the OKD cluster on the three control plane (master) machines. You can remove the bootstrap machine after you install the cluster. |
+| Three control plane (master) machines | The control plane (master) machines run the Kubernetes and OKD services that form the control plane (master). |
 | At least two compute machines, which are also known as worker machines. | The workloads requested by OKD users run on the compute machines. |
 
-The bootstrap and control plane machines must use Fedora CoreOS (FCOS) as the operating system. However, the compute machines can choose between Fedora CoreOS (FCOS), Fedora 8.6, Fedora 8.7, or Fedora 8.8. (We'll use Fedora CoreOS for all machines in this example).
+The bootstrap and control plane (master) machines must use Fedora CoreOS (FCOS) as the operating system. However, the compute (worker) machines can choose between Fedora CoreOS (FCOS), Fedora 8.6, Fedora 8.7, or Fedora 8.8. (We'll use Fedora CoreOS for all machines in this example).
 
 #### Minimum resource requirements for cluster installation
 
@@ -59,12 +59,12 @@ The following table lists the minimum resource requirements for each machine in 
    | <p align='center'>Machine</p> | <p align='center'>CPU or vCPU <sup>[1]</sup></p> | <p align='center'>Memory</p> | <p align='center'>Storage</p> | <p align='center'>NICs</p> | <p align='center'>IOPS <sup>[2]</sup></p> |
    | --- | --- | --- | --- | --- | --- |
    | <p align='center'>Bootstrap</p> | <p align='center'>4</p> | <p align='center'>16 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
-   | <p align='center'>Control plane</p> | <p align='center'>4</p> | <p align='center'>16 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
-   | <p align='center'>Compute</p> | <p align='center'>2</p> | <p align='center'>8 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
+   | <p align='center'>Control plane (master)</p> | <p align='center'>4</p> | <p align='center'>16 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
+   | <p align='center'>Compute (worker)</p> | <p align='center'>2</p> | <p align='center'>8 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
 
 > 1. One vCPU is equivalent to one physical core when simultaneous multithreading (SMT), or hyperthreading, is not enabled. When enabled, use the following formula to calculate the corresponding ratio: (threads per core × cores) × sockets = vCPUs.
-> 2. OKD and Kubernetes are sensitive to disk performance, and faster storage is recommended, particularly for etcd on the control plane nodes which require a 10 ms p99 fsync duration. Note that on many cloud platforms, storage size and IOPS scale together, so you might need to over-allocate storage volume to obtain sufficient performance.
-> 3. As with all user-provisioned installations, if you choose to use Fedora compute machines in your cluster, you take responsibility for all operating system life cycle management and maintenance, including performing system updates, applying patches, and completing all other required tasks.
+> 2. OKD and Kubernetes are sensitive to disk performance, and faster storage is recommended, particularly for etcd on the control plane nodes (master nodes) which require a 10 ms p99 fsync duration. Note that on many cloud platforms, storage size and IOPS scale together, so you might need to over-allocate storage volume to obtain sufficient performance.
+> 3. As with all user-provisioned installations, if you choose to use Fedora compute (worker) machines in your cluster, you take responsibility for all operating system life cycle management and maintenance, including performing system updates, applying patches, and completing all other required tasks.
 
 If an instance type for your platform meets the minimum requirements for cluster machines, it is supported to use in OKD.
 
@@ -105,12 +105,12 @@ Ports used for all-machine to all-machine communications:
 | TCP/UDP | 30000 - 32767 | Kubernetes NodePort range |
 | ESP | N/A | IPsec Encapsulating Security Payload (ESP) |
 
-Ports used for all-machine to control plane communications:
+Ports used for all-machine to control plane (master) communications:
 | Protocol | Port | Description |
 | --- | --- | --- |
 | TCP | 6443 | Kubernetes API server |
 
-Ports used for control plane machine to control plane machine communications:
+Ports used for control plane machine to control plane (master to master) machine communications:
 | Protocol | Port | Description |
 | --- | --- | --- |
 | TCP | 2379 - 2380 | etcd server and peer API |
@@ -121,9 +121,9 @@ In OKD deployments, DNS name resolution is required for the following components
 
 - The Kubernetes API
 - The OKD application wildcard
-- The bootstrap, control plane, and compute machines
+- The bootstrap, control plane (master), and compute (worker) machines
 
-Reverse DNS resolution is also required for the Kubernetes API, the bootstrap machine, the control plane machines, and the compute machines.
+Reverse DNS resolution is also required for the Kubernetes API, the bootstrap machine, the control plane (master) machines, and the compute (worker) machines.
 
 DNS A/AAAA or CNAME records are used for name resolution and PTR records are used for reverse name resolution. The reverse records are important because Fedora CoreOS (FCOS) uses the reverse records to set the hostnames for all the nodes, unless the hostnames are provided by DHCP. Additionally, the reverse records are used to generate the certificate signing requests (CSR) that OKD needs to operate.
 
@@ -136,10 +136,10 @@ Required DNS and reverse DNS records:
 | --- | --- | --- |
 | Kubernetes API | api.<cluster_name>.<base_domain>. | A DNS A/AAAA or CNAME record, and a DNS PTR record, to identify the API load balancer. These records must be resolvable by both clients external to the cluster and from all the nodes within the cluster. |
 | | api-int.<cluster_name>.<base_domain>. | A DNS A/AAAA or CNAME record, and a DNS PTR record, to internally identify the API load balancer. These records must be resolvable from all the nodes within the cluster. <br><br> <div style="background-color: #ffdddd; color: #000000; padding: 10px; border-left: 6px solid #f44336;"> <span style="font-size: 16px; font-">&#9888; &nbsp;**IMPORTANT:**</span><br> The API server must be able to resolve the worker nodes by the hostnames that are recorded in Kubernetes. If the API server cannot resolve the node names, then proxied API calls can fail, and you cannot retrieve logs from pods.</div> |
-| Routes | *.apps.<cluster_name>.<base_domain>. | A wildcard DNS A/AAAA or CNAME record that refers to the application ingress load balancer. The application ingress load balancer targets the machines that run the Ingress Controller pods. The Ingress Controller pods run on the compute machines by default. These records must be resolvable by both clients external to the cluster and from all the nodes within the cluster.<br><br><div style="padding: 10px; border: solid 1px; font-style: italic">For example, <code>console-openshift-console.apps.&lt;cluster_name&gt;.&lt;base_domain&gt;</code> is used as a wildcard route to the OKD console. </div> |
+| Routes | *.apps.<cluster_name>.<base_domain>. | A wildcard DNS A/AAAA or CNAME record that refers to the application ingress load balancer. The application ingress load balancer targets the machines that run the Ingress Controller pods. The Ingress Controller pods run on the compute (worker) machines by default. These records must be resolvable by both clients external to the cluster and from all the nodes within the cluster.<br><br><div style="padding: 10px; border: solid 1px; font-style: italic">For example, <code>console-openshift-console.apps.&lt;cluster_name&gt;.&lt;base_domain&gt;</code> is used as a wildcard route to the OKD console. </div> |
 | Bootstrap machine | bootstrap.<cluster_name>.<base_domain>. | A DNS A/AAAA or CNAME record, and a DNS PTR record, to identify the bootstrap machine. These records must be resolvable by the nodes within the cluster. |
-| Control plane machines | cp-&lt;n&gt;.<cluster_name>.<base_domain>. | DNS A/AAAA or CNAME records and DNS PTR records to identify each machine for the control plane nodes. These records must be resolvable by the nodes within the cluster. |
-| Compute machines | worker-&lt;n&gt;.<cluster_name>.<base_domain>. | DNS A/AAAA or CNAME records and DNS PTR records to identify each machine for the worker nodes. These records must be resolvable by the nodes within the cluster. |
+| Control plane (master) machines | cp-&lt;n&gt;.<cluster_name>.<base_domain>. | DNS A/AAAA or CNAME records and DNS PTR records to identify each machine for the control plane nodes (master nodes). These records must be resolvable by the nodes within the cluster. |
+| Compute (worker) machines | worker-&lt;n&gt;.<cluster_name>.<base_domain>. | DNS A/AAAA or CNAME records and DNS PTR records to identify each machine for the worker nodes. These records must be resolvable by the nodes within the cluster. |
 
 ##### Example DNS Configuration for a User-Provided Infrastructure
 In this example, the cluster name is okd and the base domain is osupytheas.fr.
@@ -151,7 +151,7 @@ In this example, the cluster name is okd and the base domain is osupytheas.fr.
    ; Temp Bootstrap Node
    bootstrap.okd.osupytheas.fr.        IN      A      <ip_address_reserved_for_bootstrap_node_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
-   ; Control Plane Nodes
+   ; Control Plane Nodes (Master Nodes)
    cp-1.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
    cp-2.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
    cp-3.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
@@ -194,7 +194,7 @@ In this example, the cluster name is okd and the base domain is osupytheas.fr.
    ; Temp Bootstrap Node
    <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    bootstrap.okd.osupytheas.fr.
    ;
-   ; Control Plane Nodes
+   ; Control Plane Nodes (Master Nodes)
    <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-1.okd.osupytheas.fr.
    <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-2.okd.osupytheas.fr.
    <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-3.okd.osupytheas.fr.
@@ -224,8 +224,8 @@ The load balancer infrastructure must meet the following requirements:
    API load balancer:
    | Port | Back-end machines (pool members) | Internal | External | Description |
    | ---- | -------------------------------- | -------- | -------- | ----------- |
-   | 6443 | Bootstrap and control plane. You remove the bootstrap machine from the load balancer after the bootstrap machine initializes the cluster control plane. You must configure the /readyz endpoint for the API server health check probe. | <p align="center">✅</p> | <p align="center">✅</p> | Kubernetes API server |
-   | 22623 | Bootstrap and control plane. You remove the bootstrap machine from the load balancer after the bootstrap machine initializes the cluster control plane. | <p align="center">✅</p> | <p align="center"></p> | Machine config server |
+   | 6443 | Bootstrap and control plane (master). You remove the bootstrap machine from the load balancer after the bootstrap machine initializes the cluster control plane (master). You must configure the /readyz endpoint for the API server health check probe. | <p align="center">✅</p> | <p align="center">✅</p> | Kubernetes API server |
+   | 22623 | Bootstrap and control plane (master). You remove the bootstrap machine from the load balancer after the bootstrap machine initializes the cluster control plane (master). | <p align="center">✅</p> | <p align="center"></p> | Machine config server |
 
 2. **Application Ingress load balancer**: Provides an ingress point for application traffic flowing in from outside the cluster. A working configuration for the Ingress router is required for an OKD cluster.
 
@@ -471,7 +471,7 @@ The load balancer infrastructure must meet the following requirements:
    
 4. Update the install-config.yaml with your own pull-secret and ssh key.
    - Line 2 should contain your base domain
-   - Line 10 should contain the number of control plane nodes you want (default is 3)
+   - Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
    - Line 12 should contain the cluster name
    - Line 17 should contain the network type (OpenShiftSDN (less features but more reliable) or OVNKubernetes( more features but less reliable))
    - Line 23 should contain the contents of your pull-secret.txt
@@ -486,12 +486,12 @@ The load balancer infrastructure must meet the following requirements:
    ~/openshift-install create manifests --dir ~/okd-install
    ```
 
-6. Disable the scheduler on the control plane nodes (recommended)
+6. Disable the scheduler on the control plane nodes (masetr nodes) (recommended)
 
    ```bash
    sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
    ```
-   > A warning is shown about making the control plane nodes schedulable. It is up to you if you want to run workloads on the Control Plane nodes.
+   > A warning is shown about making the control plane nodes (master nodes) schedulable. It is up to you if you want to run workloads on the Control Plane nodes (master nodes).
    >
    > If you want to, you can enable it (not recommended) with:
    > ```bash
@@ -565,7 +565,7 @@ After booting up to the live ISO, use the following command then just reboot aft
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http:// <Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
    ```
    ```bash
-   # Each of the Control Plane Nodes - cp-\#
+   # Each of the Control Plane Nodes (Master Nodes) - cp-\#
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://><Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
    ```
 
@@ -576,7 +576,7 @@ After booting up to the live ISO, use the following command then just reboot aft
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
    ```
    ```bash
-   # Each of the Control Plane Nodes - cp-\#
+   # Each of the Control Plane Nodes (Master Nodes) - cp-\#
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
    ```
 
