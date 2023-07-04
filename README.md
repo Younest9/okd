@@ -86,7 +86,7 @@ You must configure the network connectivity between machines to allow OKD cluste
 
 This section provides details about the ports that are required.
 
-IMPORTANT: In connected OKD environments, all nodes are required to have internet access to pull images for platform containers and provide telemetry data to Red Hat.
+&#9888; **IMPORTANT**: In connected OKD environments, all nodes are required to have internet access to pull images for platform containers and provide telemetry data to Red Hat.
 
 Ports used for all-machine to all-machine communications:
 
