@@ -315,7 +315,7 @@ The load balancer infrastructure must meet the following requirements:
 
 
 3. Move the openshift-install-linux.tar.gz file to it, in addition of the pull secret file:
-   > <IP_ADDRESS> is the IP address of the proxy machine
+   > `<IP_ADDRESS>` is the IP address of the proxy machine
    ```bash
    scp ~/Downloads/<openshift-install_tar.gz_file_name> ~/Downloads/pull-secret.txt  root@<IP_ADDRESS>:/root/
    ```
