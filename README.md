@@ -131,7 +131,7 @@ The following DNS records are required for a user-provisioned OKD cluster and th
 
 For example, if you specify the cluster name as okd and the base domain as osupytheas.fr, the DNS record for the Kubernetes API is api.okd.osupytheas.fr., and so on.
 
-Required DNS records:
+Required DNS and reverse DNS records:
 | Component | DNS record | Description |
 | --- | --- | --- |
 | Kubernetes API | api.<cluster_name>.<base_domain>. | A DNS A/AAAA or CNAME record, and a DNS PTR record, to identify the API load balancer. These records must be resolvable by both clients external to the cluster and from all the nodes within the cluster. |
