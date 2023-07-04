@@ -314,7 +314,7 @@ The load balancer infrastructure must meet the following requirements:
 <br><br>
 
 
-3. Move the openshift-install-linux.tar.gz file to it, in addition of the pull secret file:
+3. Move the ```openshift-install-linux.tar.gz``` file to it, in addition of the pull secret file:
    > `<IP_ADDRESS>` is the IP address of the proxy machine
    ```bash
    scp ~/Downloads/<openshift-install_tar.gz_file_name> ~/Downloads/pull-secret.txt  root@<IP_ADDRESS>:/root/
@@ -324,14 +324,14 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    ssh root@<IP_ADDRESS>
    ```
-6. Navigate to https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/ and choose the folder for your operating system and architecture, and download oc.tar.gz.
+6. Navigate to https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/ and choose the folder for your operating system and architecture, and download ```oc.tar.gz```.
 
    Unpack the archive:
    
    ```bash
    tar xvf oc.tar.gz
    ```
-   Place the oc binary in a directory that is on your PATH.
+   Place the ```oc``` binary in a directory that is on your ```PATH```.
    
    ```bash
    echo $PATH
@@ -359,17 +359,16 @@ The load balancer infrastructure must meet the following requirements:
    
 9. Install Git
    
-   
    ```bash
    apt-get install git -y
    ```
    
-10. Download [config files](https://github.com/Younest9/okd) for each of the services
+10. Download [config files](https://github.com/Younest9/okd) for each of the steps we are about to do (```haproxy.cfg```, ```install-config.yaml```)
 
       ```bash
       git clone https://gitlab.osupytheas.fr/yelarjouni/okd.git
       ```
-      Change the preferred editor to "nano" (optional)
+      Change the preferred editor to "```nano```" (optional)
 
       ```bash
       export OC_EDITOR="nano"
@@ -378,7 +377,7 @@ The load balancer infrastructure must meet the following requirements:
 
 11. Set a Static IP for the network interface :
    
-      The /etc/network/interfaces file contains network interface configuration information for Debian Linux. Hence, edit the file:
+      The ```/etc/network/interfaces``` file contains network interface configuration information for Debian Linux. Hence, edit the file:
    
       ```bash
       nano /etc/network/interfaces
@@ -386,7 +385,7 @@ The load balancer infrastructure must meet the following requirements:
    
       Look for the primary network interface in the file:
    
-      - Example: enp0s5
+      - Example: ```enp0s5```
         
         ```bash
         allow-hotplug enp0s5
@@ -406,7 +405,7 @@ The load balancer infrastructure must meet the following requirements:
             netmask 255.255.255.0
             gateway 192.168.2.254
          ```
-      Save and close the file in nano. Restart the networking service:
+      Save and close the file in ```nano```. Restart the networking service:
          
       ```bash
       systemctl restart networking
@@ -424,7 +423,7 @@ The load balancer infrastructure must meet the following requirements:
 #### Install & configure Apache Web Server
 > Necessary to download the config files to passe in as arguments in the installation command
   
-  - You can install apache on any Linux distro, in our case:
+  - You can install ```apache``` on any Linux distro, in our case (Debian 12), we will use ```apt``` to install it:
      ```
      apt install apache2 -y
      ```
@@ -437,8 +436,8 @@ The load balancer infrastructure must meet the following requirements:
      systemctl enable apache2
      ```
    
-      > If you are installing apache on the proxy machine, you need to change the port of the service to 8080, because the load balancer will be listening on port 80.
-      > To do so, edit the file /etc/apache2/ports.conf and change the port from 80 to 8080.
+      > If you are installing ```apache``` on the proxy machine, you need to change the port of the service to 8080, because the load balancer will be listening on port 80.
+      > To do so, edit the file ```/etc/apache2/ports.conf``` and change the port from 80 to 8080.
       > Or you can just execute the following command:
       > ```
       > sed -i 's/80/8080/g' /etc/apache2/ports.conf
@@ -462,19 +461,19 @@ The load balancer infrastructure must meet the following requirements:
    mkdir ~/okd-install
    ```
 
-3. Copy the install-config.yaml included in the clone repository to the install directory
+3. Copy the ```install-config.yaml``` included in the clone repository to the install directory
 
    ```bash
    cp ~/okd/install-config.yaml ~/okd-install
    ```
    
-4. Update the install-config.yaml with your own pull-secret and ssh key.
+4. Update the ```install-config.yaml``` with your own ```pull-secret``` and ```ssh key```.
    - Line 2 should contain your base domain
    - Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
    - Line 12 should contain the cluster name
-   - Line 17 should contain the network type (OpenShiftSDN (less features but more reliable) or OVNKubernetes( more features but less reliable))
-   - Line 23 should contain the contents of your pull-secret.txt
-   - Line 24 should contain the contents of your '~/.ssh/id_rsa.pub'
+   - Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable))
+   - Line 23 should contain the contents of your ```pull-secret.txt```
+   - Line 24 should contain the contents of your '```~/.ssh/id_rsa.pub```'
 
       ```bash
       nano ~/okd-install/install-config.yaml
@@ -497,7 +496,7 @@ The load balancer infrastructure must meet the following requirements:
    > sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
    > ```
    > Make any other custom changes you like to the core Kubernetes manifest files.
-   > If you enable the masters, you can add them to the http and https ingress in the haproxy.cfg file by uncommenting the corresponding lines (lines 86, 87, 88 and 100, 101, 102) in the haproxy.cfg file.
+   > If you enable the masters, you can add them to the http and https ingress in the ```haproxy.cfg``` file by uncommenting the corresponding lines (lines 86, 87, 88 and 100, 101, 102) in the haproxy.cfg file.
 
 7. Generate the Ignition config and Kubernetes auth files
 
@@ -516,7 +515,7 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    cp  ~/okd-install/*  /var/www/html/okd/
    ```
-8. Copy the raw.xz image to the web server directory (rename it to fcos to shorten the file name)
+8. Copy the raw.xz image to the web server directory (rename it to ```fcos``` to shorten the file name) becasue we will be typing it in the installation command later (the shorter the better):
 
    ```bash
    cp  ~/okd/fedora-coreos-<whatever_version_you_downloaded>.raw.xz  /var/www/html/okd/fcos
@@ -528,19 +527,18 @@ The load balancer infrastructure must meet the following requirements:
    chmod +r /var/www/html/okd/*
    ```
    
-10. Confirm you can see all files added to the `/var/www/html/okd/` dir through Apache
+10. Confirm you can see all files added to the `/var/www/html/okd/` dir through ```Apache```
 
       ```bash
       curl localhost/okd/
       ```
-      > Note: If you are on the same machine as the haproxy server, you can use the following command to test the web server:
+      > Note: If you are on the same machine as the ```haproxy``` server, you can use the following command to test the web server:
       > ```bash
       > curl localhost:8080/okd/
       > ```
 
 ### Deploy OKD
 
-1. Power on the bootstrap host and cp-# hosts
 
 #### Static IP addresses
 
@@ -560,14 +558,15 @@ The load balancer infrastructure must meet the following requirements:
          > ```bash
          > ip a
          > ```
-      - You pass the networking configuration to the nodes by adding the flag --copy-network to the install command (see below).
+      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
 
 #### Install OKD
 
-After booting up to the live ISO, use the following command then just reboot after it finishes and make sure you remove the attached .iso
+Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
 
-- If you are using static ip addresses, [change the network configuration to match your DNS records and IP addresses](#static-ip-addresses), then you have to pass --copy-network to the coreos-installer command to copy the network configuration from the live environment to the installed system.
+- If you are using static ip addresses, [change the network configuration to match your DNS records and IP addresses](#static-ip-addresses), then you have to pass ```--copy-network``` to the coreos-installer command to copy the network configuration from the live environment to the installed system.
 
+   Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
    # Bootstrap Node - bootstrap
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http:// <Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
@@ -578,7 +577,8 @@ After booting up to the live ISO, use the following command then just reboot aft
    ```
 
 - If you are using DHCP, you can just use the following commands to install OKD.
-
+  
+  Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
    # Bootstrap Node - bootstrap
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
@@ -590,17 +590,17 @@ After booting up to the live ISO, use the following command then just reboot aft
 
 ### Monitor the Bootstrap Process
 
-1. You can monitor the bootstrap process from the proxy machine at different log levels (debug, error, info)
+You can monitor the bootstrap process from the proxy machine at different log levels (debug, error, info)
 
    ```bash
    ~/openshift-install --dir ~/okd-install wait-for bootstrap-complete --log-level=debug
    ```
 
-2. Once bootstrapping is complete the bootstrap node [can be removed](#remove-the-bootstrap-node)
+Once bootstrapping is complete the bootstrap node [can be removed](#remove-the-bootstrap-node)
 
 ### Remove the Bootstrap Node
 
-1. Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file on the proxy machine
+Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file on the proxy machine
 
    ```bash
    # Two entries
@@ -609,28 +609,30 @@ After booting up to the live ISO, use the following command then just reboot aft
    systemctl reload haproxy
    ```
 
-2. The bootstrap host can now be safely shutdown and deleted, the host is no longer required
+The bootstrap host can now be safely shutdown and deleted, the host is no longer required
 
 ### Wait for installation to complete
 
 > **IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
-1. Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event
+Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event
 
    ```bash
    ~/openshift-install --dir ~/okd-install wait-for install-complete
    ```
-1. Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new tab whilst waiting for the above command to complete
+Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new tab whilst waiting for the above command to complete
 
 ### Join Worker Nodes
 
-1. Power on the worker hosts (if you have any)
+#### On the worker nodes
+
+Power on the worker hosts and boot up to the live ISO.
    
-    After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso, but before that you have to [change the network configuration to match your DNS records and IP addresses](#static-ip-addresses) if you are using static ip addresses.
-    > `--copy-network` is only required if you are using static ip addresses.
-    ```bash
-    # Each of the Worker Nodes - worker-\#
-    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition --copy-network
+   After booting up, use the following command then just reboot after it finishes and make sure youremove the attached .iso, but before that you have to [change the network configuration to matchyour DNS records and IP addresses](#static-ip-addresses) if you are using static ip addresses.
+   > `--copy-network` is only required if you are using static ip addresses.
+   ```bash
+   # Each of the Worker Nodes - worker-\#
+   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure--insecure-ignition --copy-network
    ```
    > If you are using DHCP, you can just use the following commands to install OKD.
    > ```bash
@@ -638,7 +640,9 @@ After booting up to the live ISO, use the following command then just reboot aft
    > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
    > ```
 
-2. Setup 'oc' and 'kubectl' clients on the proxy machine for now
+#### On the proxy machine
+
+Setup 'oc' and 'kubectl' clients on the proxy machine for now
 
    ```bash
    export KUBECONFIG=~/okd-install/auth/kubeconfig
@@ -646,7 +650,7 @@ After booting up to the live ISO, use the following command then just reboot aft
    oc get nodes
    ```
 
-3. View and approve pending CSRs
+View and approve pending CSRs
 
    > **Note:** Once you approve the first set of CSRs additional 'kubelet-serving' CSRs will be created. These must be approved too.
    >
@@ -661,7 +665,7 @@ After booting up to the live ISO, use the following command then just reboot aft
    oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
    ```
 
-4. Watch and wait for the Worker Nodes to join the cluster and enter a 'Ready' status
+Watch and wait for the Worker Nodes to join the cluster and enter a 'Ready' status
 
    > This can take 5-10 minutes
 
@@ -671,13 +675,13 @@ After booting up to the live ISO, use the following command then just reboot aft
 
 ### Access the OpenShift Console
 
-1. Wait for the 'Console' Cluster Operator to become available
+Wait for the 'Console' Cluster Operator to become available
 
    ```bash
    oc get co
    ```
    
-2. Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'kubeadmin' user
+Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'kubeadmin' user
 
    > You will get self signed certificate warnings that you can ignore
    >
