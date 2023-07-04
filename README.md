@@ -94,14 +94,14 @@ Ports used for all-machine to all-machine communications:
 | --- | --- | --- |
 | ICMP | N/A | Network reachability checks |
 | TCP | 1936 | Metrics |
-| | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101 and the Cluster Version Operator on port 9099. |
-| | 10250 - 10259 | The default ports that Kubernetes reserves |
-| | 10256 | OpenshiftSDN |
+|     | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101 and the Cluster Version Operator on port 9099. |
+|     | 10250 - 10259 | The default ports that Kubernetes reserves |
+|     | 10256 | OpenshiftSDN |
 | UDP | 4789 | VXLAN |
-| | 6081 | Geneve |
-| | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101. |
-| | 500 | IPsec IKE packets |
-| | 4500 | IPsec NAT-T packets |
+|     | 6081 | Geneve |
+|     | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101. |
+|     | 500 | IPsec IKE packets |
+|     | 4500 | IPsec NAT-T packets |
 | TCP/UDP | 30000 - 32767 | Kubernetes NodePort range |
 | ESP | N/A | IPsec Encapsulating Security Payload (ESP) |
 
