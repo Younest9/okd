@@ -414,7 +414,6 @@ The load balancer infrastructure must meet the following requirements:
 12. If not using DHCP, see the [Static IP addressing](#static-ip-addressing) section for details about configuring static IP addresses for your cluster nodes later in the installation process, for now, skip to the [Install & configure Apache Web Server](#install--configure-apache-web-server) section, otherwise, continue to the next step.
 
 13. Configure the DHCP (If you are using DHCP to provide the IP networking configuration to your cluster nodes, configure your DHCP service)
-  - If you are using DHCP to provide the IP networking configuration to your cluster nodes, configure your DHCP service:
 
        - Add persistent IP addresses for the nodes to your DHCP server configuration. In your configuration, match the MAC address of the relevant network interface to the intended IP address for each node.
 
