@@ -272,7 +272,7 @@ The load balancer infrastructure must meet the following requirements:
       }
    }
    ```
-      Copy it to a file on local machine.
+      Copy it to a file on the Downloads folder of your local machine and name it `pull-secret.txt`.
 
    > This ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` to copy-paste easily.
 
@@ -321,7 +321,7 @@ The load balancer infrastructure must meet the following requirements:
 <br><br>
 
 
-3. Move the ```openshift-install-linux.tar.gz``` file to it, in addition of the pull secret file:
+3. Move the ```openshift-install-linux.tar.gz``` file to it for your local machine (where you downloaded the file), in addition of the pull secret file (```pull-secret.txt```)
    > `<IP_ADDRESS>` is the IP address of the proxy machine
    ```bash
    scp ~/Downloads/<openshift-install_tar.gz_file_name> ~/Downloads/pull-secret.txt  root@<IP_ADDRESS>:/root/
@@ -358,7 +358,7 @@ The load balancer infrastructure must meet the following requirements:
    tar xvf openshift-install-linux.tar.gz
    ```
 
-8. Update the OS so we get the latest packages for each of the services we are about to install
+8. Update the OS so we get the latest packages for each of the services we are about to install (```haproxy```, ```git```, ```apache2```)
 
    ```bash
    apt-get update && apt-get upgrade -y
