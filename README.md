@@ -552,6 +552,15 @@ The load balancer infrastructure must meet the following requirements:
          ```bash	
          sudo nmtui-edit
          ```
+         > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
+         > Restart the network service:
+         > ```bash
+         > sudo systemctl restart NetworkManager
+         > ```
+         > Then check by running:
+         > ```bash
+         > ip a
+         > ```
       - You pass the networking configuration to the nodes by adding the flag --copy-network to the install command (see below).
 
 #### Install OKD
