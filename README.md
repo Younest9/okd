@@ -302,9 +302,9 @@ The load balancer infrastructure must meet the following requirements:
    > If you want to use DHCP, write down all MAC addresses of all machines.
 
 
-### Configure the load balancer and the ingress controller
+### Configure the load balancer and the ingress controller (proxy machine)
 
-1. Install the OS that you chose on the services machine, in our case it will be debian 12.
+1. Install the OS that you chose on the proxy machine, in our case it will be debian 12.
 
 2. Boot the machine
 
