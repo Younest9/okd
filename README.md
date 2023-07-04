@@ -546,7 +546,21 @@ The load balancer infrastructure must meet the following requirements:
 
 ### Deploy OKD
 
-
+Recap: You should have 7 machines
+- 1 machine for the load balancer (haproxy) that has:
+   - Debian 12 installed
+   - HAProxy installed and configured
+   - Apache installed and configured
+   - Ignition files (bootstrap.ign, master.ign and worker.ign) and fedora CoreOS raw.xz file (fcos) hosted on Apache
+- 1 machine for the bootstrap node that has:
+   - Fedora CoreOS iso mounted
+   - Not booted yet
+- 3 machines for the control plane nodes (master nodes) that have:
+   - Fedora CoreOS iso mounted
+   - Not booted yet
+- 2 machines for the compute nodes (worker nodes) that have:
+   - Fedora CoreOS iso mounted
+   - Not booted yet
 #### Static IP addresses
 
    - If you are not using a DHCP service:
@@ -622,11 +636,13 @@ The bootstrap host can now be safely shutdown and deleted, the host is no longer
 
 > **IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
-Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event
+Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
 
    ```bash
+   # Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
    ~/openshift-install --dir ~/okd-install wait-for install-complete
    ```
+
 Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new tab whilst waiting for the above command to complete
 
 ### Join Worker Nodes
