@@ -93,15 +93,15 @@ Ports used for all-machine to all-machine communications:
 | Protocol | Port | Description |
 | --- | --- | --- |
 | ICMP | N/A | Network reachability checks |
-| TCP | 1936 | Metrics |
+| <p style="border-bottom: none;">TCP</p> | 1936 | Metrics |
 |     | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101 and the Cluster Version Operator on port 9099. |
-|     | 10250 - 10259 | The default ports that Kubernetes reserves |
+|  <p style="border-bottom: none;"></p>   | 10250 - 10259 | The default ports that Kubernetes reserves |
 |     | 10256 | OpenshiftSDN |
-| UDP | 4789 | VXLAN |
-|     | 6081 | Geneve |
-|     | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101. |
-|     | 500 | IPsec IKE packets |
-|     | 4500 | IPsec NAT-T packets |
+| <p style="border-bottom: none;">UDP</p> | 4789 | VXLAN |
+|  <p style="border-bottom: none;"></p>   | 6081 | Geneve |
+|  <p style="border-bottom: none;"></p>   | 9000 - 9999 | Host level services, including the node exporter on ports 9100-9101. |
+|  <p style="border-bottom: none;"></p>   | 500 | IPsec IKE packets |
+|  <p style="border-bottom: none;"></p>   | 4500 | IPsec NAT-T packets |
 | TCP/UDP | 30000 - 32767 | Kubernetes NodePort range |
 | ESP | N/A | IPsec Encapsulating Security Payload (ESP) |
 
