@@ -530,13 +530,13 @@ The load balancer infrastructure must meet the following requirements:
    
 10. Confirm you can see all files added to the `/var/www/html/okd/` dir through Apache
 
-   ```bash
-   curl localhost/okd/
-   ```
-   > Note: If you are on the same machine as the haproxy server, you can use the following command to test the web server:
-   > ```bash
-   > curl localhost:8080/okd/
-   > ```
+      ```bash
+      curl localhost/okd/
+      ```
+      > Note: If you are on the same machine as the haproxy server, you can use the following command to test the web server:
+      > ```bash
+      > curl localhost:8080/okd/
+      > ```
 
 ### Deploy OKD
 
