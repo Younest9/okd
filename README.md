@@ -486,21 +486,21 @@ The load balancer infrastructure must meet the following requirements:
    ~/openshift-install create manifests --dir ~/okd-install
    ```
 
+6. Disable the scheduler on the control plane nodes (recommended)
+
+   ```bash
+   sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
+   ```
    > A warning is shown about making the control plane nodes schedulable. It is up to you if you want to run workloads on the Control Plane nodes.
    >
-   > If you dont want to, you can disable it with:
-   > ```bash
-   > sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
-   > ```
-   > 
-   > If you want to enable it, you can with:
+   > If you want to, you can enable it (not recommended) with:
    > ```bash
    > sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
    > ```
    > Make any other custom changes you like to the core Kubernetes manifest files.
    > If you enable the masters, you can add them to the http and https ingress in the haproxy.cfg file by uncommenting the corresponding lines (lines 86, 87, 88 and 100, 101, 102) in the haproxy.cfg file.
 
-   Generate the Ignition config and Kubernetes auth files
+7. Generate the Ignition config and Kubernetes auth files
 
    ```bash
    ~/openshift-install create ignition-configs --dir ~/okd-install/
@@ -522,7 +522,7 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    cp  ~/okd/fedora-coreos-<whatever_version_you_downloaded>.raw.xz  /var/www/html/okd/fcos
    ```
-   > Example: fedora-coreos-38.20230514.3.0-live.x86_64.raw.xz 
+   > Example name: fedora-coreos-38.20230514.3.0-live.x86_64.raw.xz 
 9. Change permissions of the web server directory
 
    ```bash
@@ -534,7 +534,11 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    curl localhost/okd/
    ```
-   > Note: If you are on the same machine as the haproxy server, you will need to change the port to 8080
+   > Note: If you are on the same machine as the haproxy server, you can use the following command to test the web server:
+   > ```bash
+   > curl localhost:8080/okd/
+   > ```
+
 ### Deploy OKD
 
 1. Power on the bootstrap host and cp-# hosts
@@ -543,7 +547,7 @@ The load balancer infrastructure must meet the following requirements:
 
    - If you are not using a DHCP service:
    
-      - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time. These can be passed as boot arguments if you are installing from an ISO image.
+      - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
       - You can set a static ip address by editing the network configuartion while live booting the machine.
          ```bash	
          sudo nmtui-edit
@@ -554,7 +558,7 @@ The load balancer infrastructure must meet the following requirements:
 
 After booting up to the live ISO, use the following command then just reboot after it finishes and make sure you remove the attached .iso
 
-- If you are using static ip addresses, you have to pass --copy-network to the coreos-installer command to copy the network configuration from the live environment to the installed system.
+- If you are using static ip addresses, [change the network configuration to match your DNS records and IP addresses](#static-ip-addresses), then you have to pass --copy-network to the coreos-installer command to copy the network configuration from the live environment to the installed system.
 
    ```bash
    # Bootstrap Node - bootstrap
@@ -567,7 +571,6 @@ After booting up to the live ISO, use the following command then just reboot aft
 
 - If you are using DHCP, you can just use the following commands to install OKD.
 
-
    ```bash
    # Bootstrap Node - bootstrap
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
@@ -579,7 +582,7 @@ After booting up to the live ISO, use the following command then just reboot aft
 
 ### Monitor the Bootstrap Process
 
-1. You can monitor the bootstrap process from the okd-svc host at different log levels (debug, error, info)
+1. You can monitor the bootstrap process from the proxy machine at different log levels (debug, error, info)
 
    ```bash
    ~/openshift-install --dir ~/okd-install wait-for bootstrap-complete --log-level=debug
@@ -589,7 +592,7 @@ After booting up to the live ISO, use the following command then just reboot aft
 
 ### Remove the Bootstrap Node
 
-1. Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file
+1. Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file on the proxy machine
 
    ```bash
    # Two entries
@@ -615,18 +618,19 @@ After booting up to the live ISO, use the following command then just reboot aft
 
 1. Power on the worker hosts (if you have any)
    
-    After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso
+    After booting up, use the following command then just reboot after it finishes and make sure you remove the attached .iso, but before that you have to [change the network configuration to match your DNS records and IP addresses](#static-ip-addresses) if you are using static ip addresses.
+    > `--copy-network` is only required if you are using static ip addresses.
     ```bash
     # Each of the Worker Nodes - worker-\#
-    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
+    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition --copy-network
    ```
-   > If you are using static ip addresses, you have to pass --copy-network to the coreos-installer command to copy the network configuration from the live environment to the installed system.
+   > If you are using DHCP, you can just use the following commands to install OKD.
    > ```bash
    > # Each of the Worker Nodes - worker-\#
-   > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition --copy-network
+   > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
    > ```
 
-2. Setup 'oc' and 'kubectl' clients on the ocp-svc machine
+2. Setup 'oc' and 'kubectl' clients on the proxy machine for now
 
    ```bash
    export KUBECONFIG=~/okd-install/auth/kubeconfig
