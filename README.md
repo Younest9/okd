@@ -148,60 +148,60 @@ In this example, the cluster name is okd and the base domain is osupytheas.fr.
 
 
    ```
-      ; Temp Bootstrap Node
-      bootstrap.okd.osupytheas.fr.        IN      A      <ip_address_reserved_for_bootstrap_node_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   ; Temp Bootstrap Node
+   bootstrap.okd.osupytheas.fr.        IN      A      <ip_address_reserved_for_bootstrap_node_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
-      ; Control Plane Nodes
-      cp-1.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-      cp-2.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-      cp-3.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   ; Control Plane Nodes
+   cp-1.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   cp-2.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   cp-3.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
-      ; Worker Nodes
-      worker-1.okd.osupytheas.fr.     IN      A      <ip_address_reserved_for_worker_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-      worker-2.okd.osupytheas.fr.     IN      A      <ip_address_reserved_for_worker_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   ; Worker Nodes
+   worker-1.okd.osupytheas.fr.     IN      A      <ip_address_reserved_for_worker_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   worker-2.okd.osupytheas.fr.     IN      A      <ip_address_reserved_for_worker_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
-      ; OKD Internal - Load balancer
-      api.okd.osupytheas.fr.        IN    A    <the_static_ip_address_we_setup>
-      api-int.okd.osupytheas.fr.    IN    A    <the_static_ip_address_we_setup>
-      *.apps.okd.osupytheas.fr.     IN    A    <the_static_ip_address_we_setup>
-      proxy.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_want_to_setup>  ;; Optional, if not specified, must set a static IP for the proxy machine.
+   ; OKD Internal - Load balancer
+   api.okd.osupytheas.fr.        IN    A    <the_static_ip_address_we_setup>
+   api-int.okd.osupytheas.fr.    IN    A    <the_static_ip_address_we_setup>
+   *.apps.okd.osupytheas.fr.     IN    A    <the_static_ip_address_we_setup>
+   proxy.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_want_to_setup>  ;; Optional, if not specified, must set a static IP for the proxy machine.
 
-      ; ETCD Cluster
-      etcd-0.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-      etcd-1.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-      etcd-2.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   ; ETCD Cluster
+   etcd-0.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   etcd-1.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   etcd-2.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
-      ; OKD Internal SRV records
-      _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-0.okd
-      _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-1.okd
-      _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-2.okd
+   ; OKD Internal SRV records
+   _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-0.okd
+   _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-1.okd
+   _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-2.okd
 
-      ; OKD Internal - Wildcard Routes
-      oauth-openshift.apps.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_setup>
+   ; OKD Internal - Wildcard Routes
+   oauth-openshift.apps.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_setup>
       
-      ; OKD Internal - Console
-      console-openshift-console.apps.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_setup>
+   ; OKD Internal - Console
+   console-openshift-console.apps.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_setup>
    ```
 
 - Reverse DNS Records:
 
    ```
-      ; OKD Internal - Load balancer
-      <the_static_ip_address_we_setup_reversed>      IN    PTR    proxy.okd.osupytheas.fr. ;; Optional, if not specified, must set a static IP for the proxy machine.
-      <the_static_ip_address_we_setup_reversed>      IN    PTR    api.okd.osupytheas.fr.
-      <the_static_ip_address_we_setup_reversed>      IN    PTR    api-int.okd.osupytheas.fr.
-      ;
-      ; Temp Bootstrap Node
-      <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    bootstrap.okd.osupytheas.fr.
-      ;
-      ; Control Plane Nodes
-      <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-1.okd.osupytheas.fr.
-      <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-2.okd.osupytheas.fr.
-      <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-3.okd.osupytheas.fr.
-      ;
-      ; Worker Nodes
-      <ip_address_reserved_for_worker_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-1.okd.osupytheas.fr.
-      <ip_address_reserved_for_worker_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-2.okd.osupytheas.fr.
+   ; OKD Internal - Load balancer
+   <the_static_ip_address_we_setup_reversed>      IN    PTR    proxy.okd.osupytheas.fr. ;; Optional, if not specified, must set a static IP for the proxy machine.
+   <the_static_ip_address_we_setup_reversed>      IN    PTR    api.okd.osupytheas.fr.
+   <the_static_ip_address_we_setup_reversed>      IN    PTR    api-int.okd.osupytheas.fr.
+   ;
+   ; Temp Bootstrap Node
+   <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    bootstrap.okd.osupytheas.fr.
+   ;
+   ; Control Plane Nodes
+   <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-1.okd.osupytheas.fr.
+   <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-2.okd.osupytheas.fr.
+   <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-3.okd.osupytheas.fr.
+   ;
+   ; Worker Nodes
+   <ip_address_reserved_for_worker_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-1.okd.osupytheas.fr.
+   <ip_address_reserved_for_worker_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-2.okd.osupytheas.fr.
    ```
 
 > **Note:**
