@@ -26,6 +26,7 @@
    - [Load balancing requirements](#load-balancing-requirements-for-user-provisioned-infrastructure)
    - [Files required for cluster installation](#files-to-download)
    - [Load Balancer and Proxy configuration](#configure-the-load-balancer-and-the-ingress-controller)
+   - [IP Addressing](#configure-ip-addressing)
    - [Cluster configuration (Generate and host the install files on an web server)](#generate-and-host-install-files)
    - [Deploy OKD](#deploy-okd)
       - [Install OKD](#install-okd)
