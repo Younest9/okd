@@ -21,4 +21,4 @@ platform:
   none: {}
 fips: false
 pullSecret: '<pull_secret_downloaded_content|{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}>'
-sshKey: "<ssh_key>"
+sshKey: "<ssh__public_key>"
