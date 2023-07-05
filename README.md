@@ -464,7 +464,7 @@ The load balancer infrastructure must meet the following requirements:
 #### Install & configure Apache Web Server
 > Necessary to download the config files to passe in as arguments in the installation command
   
-  - You can install ```apache``` on any Linux distro, in our case (Debian 12), we will use ```apt``` to install it:
+  - You can install ```apache``` on any Linux distro, in our case on the proxy machine (load balancer) that has Debian 12, so we will use ```apt``` to install it:
      ```
      apt install apache2 -y
      ```
