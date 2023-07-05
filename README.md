@@ -453,7 +453,7 @@ The load balancer infrastructure must meet the following requirements:
 
 - If not using DHCP, you will be configuring the static IP addresses for the cluster nodes later, so you can skip this step.
 
-   > Configure the DHCP (If you are using DHCP to provide the IP networking configuration to your cluster nodes, configure your DHCP service)
+   > If you are using DHCP to provide the IP networking configuration to your cluster nodes, configure your DHCP server to provide the following information to the cluster nodes:
    >
    > - Add persistent IP addresses for the nodes to your DHCP server configuration. In your configuration, match the MAC address of the relevant network interface to the intended IP address for each node.
    >
