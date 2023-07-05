@@ -27,13 +27,13 @@
    - [Files required for cluster installation](#files-to-download)
    - [Load Balancer and Proxy configuration](#configure-the-load-balancer-and-the-ingress-controller)
    - [Cluster configuration (Generate and host the install files on an web server)](#generate-and-host-install-files)
-   - [Setup Static IP addresses](#static-ip-addresses)
-   - [Install OKD](#install-okd)
-   - [Monitor the Bootstrap Process](#monitor-the-bootstrap-process)
-   - [Wait for installation to complete](#wait-for-installation-to-complete)
-   - [Join the worker nodes](#join-worker-nodes)
-   - [Access the OKD web console](#access-the-openshift-console)
-- [Sources and References](#sources)
+   - [Deploy OKD](#deploy-okd)
+      - [Install OKD](#install-okd)
+      - [Monitor the Bootstrap Process](#monitor-the-bootstrap-process)
+      - [Wait for installation to complete](#wait-for-installation-to-complete)
+      - [Join the worker nodes](#join-worker-nodes)
+      - [Access the OKD web console](#access-the-openshift-console)
+   - [Sources and References](#sources)
 
   
   
@@ -595,26 +595,6 @@ Recap: You should have 7 machines
 - 2 machines for the compute nodes (worker nodes) that have:
    - Fedora CoreOS iso mounted
    - Not booted yet
-#### Static IP addresses
-
-   - If you are not using a DHCP service:
-   
-      - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
-      - You can set a static ip address by editing the network configuartion while live booting the machine.
-         ```bash	
-         sudo nmtui-edit
-         ```
-         > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
-         > Restart the network service:
-         > ```bash
-         > sudo systemctl restart NetworkManager
-         > ```
-         > Then check by running:
-         > ```bash
-         > ip a
-         > ```
-      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
-
 #### Install OKD
 
 Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
@@ -661,7 +641,7 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
    ```
 
-### Monitor the Bootstrap Process
+#### Monitor the Bootstrap Process
 
 You can monitor the bootstrap process from the proxy machine at different log levels (debug, error, info)
 
@@ -671,7 +651,7 @@ You can monitor the bootstrap process from the proxy machine at different log le
 
 Once bootstrapping is complete the bootstrap node [can be removed](#remove-the-bootstrap-node)
 
-### Remove the Bootstrap Node
+#### Remove the Bootstrap Node
 
 Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file on the proxy machine
 
@@ -684,7 +664,7 @@ Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg
 
 The bootstrap host can now be safely shutdown and deleted, the host is no longer required
 
-### Wait for installation to complete
+#### Wait for installation to complete
 
 > **IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
@@ -697,9 +677,9 @@ Collect the OpenShift Console address and kubeadmin credentials from the output 
 
 Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new tab whilst waiting for the above command to complete
 
-### Join Worker Nodes
+#### Join Worker Nodes
 
-#### On the worker nodes
+##### On the worker nodes
 
 Power on the worker hosts and boot up to the live ISO.
    
@@ -736,7 +716,7 @@ Power on the worker hosts and boot up to the live ISO.
    > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
    > ```
 
-#### On the proxy machine
+##### On the proxy machine
 
 Setup 'oc' and 'kubectl' clients on the proxy machine for now
 
@@ -769,7 +749,7 @@ Watch and wait for the Worker Nodes to join the cluster and enter a 'Ready' stat
    watch -n5 oc get nodes
    ```
 
-### Access the OpenShift Console
+#### Access the OpenShift Console
 
 Wait for the 'Console' Cluster Operator to become available
 
@@ -783,7 +763,7 @@ Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.
    >
    > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
 
-#### Sources
+### Sources
 
 - [OKD 4.3 Architecture](https://docs.okd.io/latest/architecture/architecture.html)
 - [OKD 4.3 Installation Guide](https://docs.okd.io/latest/installing/installing_bare_metal/installing-bare-metal.html)
