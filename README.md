@@ -52,13 +52,14 @@ It's the same architecture as the OpenShift Container Platform, but without the 
 
 The smallest OKD clusters require the following hosts:
 
-| Hosts | Description |
-| --- | --- |
-| One temporary bootstrap machine | The cluster requires the bootstrap machine to deploy the OKD cluster on the three control plane (master) machines. You can remove the bootstrap machine after you install the cluster. |
-| Three control plane (master) machines | The control plane (master) machines run the Kubernetes and OKD services that form the control plane (master). |
-| At least two compute machines, which are also known as worker machines. | The workloads requested by OKD users run on the compute machines. |
+| Hosts | Description | OS |
+| --- | --- | --- |
+| One temporary bootstrap machine | The cluster requires the bootstrap machine to deploy the OKD cluster on the three control plane (master) machines. You can remove the bootstrap machine after you install the cluster. | Fedora CoreOS (FCOS)<sup>*</sup> |
+| Three control plane (master) machines | The control plane (master) machines run the Kubernetes and OKD services that form the control plane (master). | Fedora CoreOS (FCOS)<sup>*</sup> |
+| At least two compute machines, which are also known as worker machines. | The workloads requested by OKD users run on the compute machines. | Fedora CoreOS (FCOS)<sup>*</sup> |
+| One load balancer machine (proxy) | The load balancer machine (proxy) provides access to the OKD cluster (ingress). | Debian 12 (or Any Linux Distribution) |
 
-The bootstrap and control plane (master) machines must use Fedora CoreOS (FCOS) as the operating system. However, the compute (worker) machines can choose between Fedora CoreOS (FCOS), Fedora 8.6, Fedora 8.7, or Fedora 8.8. (We'll use Fedora CoreOS for all machines in this example).
+> \* The bootstrap and control plane (master) machines must use Fedora CoreOS (FCOS) as the operating system. However, the compute (worker) machines can choose between Fedora CoreOS (FCOS), Fedora 8.6, Fedora 8.7, or Fedora 8.8. (We'll use Fedora CoreOS for all machines in this example).
 
 #### Minimum resource requirements for cluster installation
 
@@ -68,6 +69,7 @@ The following table lists the minimum resource requirements for each machine in 
    | <p align='center'>Bootstrap</p> | <p align='center'>4</p> | <p align='center'>16 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
    | <p align='center'>Control plane (master)</p> | <p align='center'>4</p> | <p align='center'>16 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
    | <p align='center'>Compute (worker)</p> | <p align='center'>2</p> | <p align='center'>8 GB</p> | <p align='center'>100 GB</p> | <p align='center'>1</p> | <p align='center'>300</p> |
+   | <p align='center'>Load balancer (proxy)</p> | <p align='center'>2</p> | <p align='center'>4 GB</p> | <p align='center'>20 GB</p> | <p align='center'>1</p> | <p align='center'>100</p> |
 
 > 1. One vCPU is equivalent to one physical core when simultaneous multithreading (SMT), or hyperthreading, is not enabled. When enabled, use the following formula to calculate the corresponding ratio: (threads per core × cores) × sockets = vCPUs.
 > 2. OKD and Kubernetes are sensitive to disk performance, and faster storage is recommended, particularly for etcd on the control plane nodes (master nodes) which require a 10 ms p99 fsync duration. Note that on many cloud platforms, storage size and IOPS scale together, so you might need to over-allocate storage volume to obtain sufficient performance.
@@ -417,15 +419,47 @@ The load balancer infrastructure must meet the following requirements:
       ```bash
       systemctl restart networking
       ```
-12. If not using DHCP, see the [Static IP addressing](#static-ip-addressing) section for details about configuring static IP addresses for your cluster nodes later in the installation process, for now, skip to the [Install & configure Apache Web Server](#install--configure-apache-web-server) section, otherwise, continue to the next step.
+12. Install HAProxy
 
-13. Configure the DHCP (If you are using DHCP to provide the IP networking configuration to your cluster nodes, configure your DHCP service)
+      ```bash
+      apt-get install haproxy -y
+      ```
+13. Install & configure HAProxy
 
-       - Add persistent IP addresses for the nodes to your DHCP server configuration. In your configuration, match the MAC address of the relevant network interface to the intended IP address for each node.
+   - You can install HAProxy on any Linux distro, in our case:
+   
+        ```bash
+      apt -y install haproxy 
+        ```
+      
+   - Modify the config before starting haproxy
+   
+        - you can only modify the ip addresses to not break the config file.
+   
+   - Copy HAProxy config
 
-       - When you use DHCP to configure IP addressing for the cluster machines, the machines also obtain the DNS server information through DHCP. Define the persistent DNS server address that is used by the cluster nodes through your DHCP server configuration.
-       
-       - Define the hostnames of your cluster nodes in your DHCP server configuration. See the Setting the cluster node hostnames through DHCP section for details about hostname considerations.
+      ```bash
+     \cp ~/okd/haproxy.cfg /etc/haproxy/haproxy.cfg
+      ```
+   
+   - Enable and start the service
+
+      ```bash
+      systemctl enable haproxy
+      systemctl start haproxy
+      systemctl status haproxy
+      ```
+#### Configure IP addressing
+
+- If not using DHCP, you will be configuring the static IP addresses for the cluster nodes later, so you can skip this step.
+
+   > Configure the DHCP (If you are using DHCP to provide the IP networking configuration to your cluster nodes, configure your DHCP service)
+   >
+   > - Add persistent IP addresses for the nodes to your DHCP server configuration. In your configuration, match the MAC address of the relevant network interface to the intended IP address for each node.
+   >
+   > - When you use DHCP to configure IP addressing for the cluster machines, the machines also obtain the DNS server information through DHCP. Define the persistent DNS server address that is used by the cluster nodes through your DHCP server configuration.
+   >   
+   > - Define the hostnames of your cluster nodes in your DHCP server configuration. See the Setting the cluster node hostnames through DHCP section for details about hostname considerations.
 
 #### Install & configure Apache Web Server
 > Necessary to download the config files to passe in as arguments in the installation command
@@ -585,7 +619,25 @@ Recap: You should have 7 machines
 
 Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
 
-- If you are using static ip addresses, [change the network configuration to match your DNS records and IP addresses](#static-ip-addresses), then you have to pass ```--copy-network``` to the coreos-installer command to copy the network configuration from the live environment to the installed system.
+- If you are using a DHCP service, you can skip this step (you've already done it).
+
+- If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now.
+   - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
+      - You can set a static ip address by editing the network configuartion while live booting the machine.
+         ```bash	
+         sudo nmtui-edit
+         ```
+         > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
+         > Restart the network service:
+         > ```bash
+         > sudo systemctl restart NetworkManager
+         > ```
+         > Then check by running:
+         > ```bash
+         > ip a
+         > ```
+      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
+          > `--copy-network` is only required if you are using static ip addresses.
 
    Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
@@ -597,7 +649,7 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://><Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
    ```
 
-- If you are using DHCP, you can just use the following commands to install OKD.
+- If you are using DHCP, you can just use the following commands to install OKD (without the ```--copy-network``` flag)
   
   Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
@@ -651,13 +703,34 @@ Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new 
 
 Power on the worker hosts and boot up to the live ISO.
    
-   After booting up, use the following command then just reboot after it finishes and make sure youremove the attached .iso, but before that you have to [change the network configuration to matchyour DNS records and IP addresses](#static-ip-addresses) if you are using static ip addresses.
-   > `--copy-network` is only required if you are using static ip addresses.
+
+- If you are using a DHCP service, you can skip this step (you've already done it).
+
+- If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now.
+   - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
+      - You can set a static ip address by editing the network configuartion while live booting the machine.
+         ```bash	
+         sudo nmtui-edit
+         ```
+         > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
+         > Restart the network service:
+         > ```bash
+         > sudo systemctl restart NetworkManager
+         > ```
+         > Then check by running:
+         > ```bash
+         > ip a
+         > ```
+      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
+         > `--copy-network` is only required if you are using static ip addresses.
+   
+
+   Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
    # Each of the Worker Nodes - worker-\#
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure--insecure-ignition --copy-network
    ```
-   > If you are using DHCP, you can just use the following commands to install OKD.
+   > If you are using DHCP, you can just use the following commands to install OKD (without the ```--copy-network``` flag)
    > ```bash
    > # Each of the Worker Nodes - worker-\#
    > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
