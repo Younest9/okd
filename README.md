@@ -675,7 +675,7 @@ The bootstrap host can now be safely shutdown and deleted, the host is no longer
 
 #### Wait for installation to complete
 
-> **IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
+**IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
 Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
 
