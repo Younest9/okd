@@ -606,7 +606,7 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
 
 - If you are using a DHCP service, you can skip this step (you've already done it).
 
-- If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now.
+- If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now (use can use the scripts in the ```scripts``` directory to help you with that (experimental)).
    - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
       - You can set a static ip address by editing the network configuartion while live booting the machine.
          ```bash	
@@ -657,6 +657,10 @@ You can monitor the bootstrap process from the proxy machine at different log le
 Once bootstrapping is complete the bootstrap node [can be removed](#remove-the-bootstrap-node)
 
 #### Remove the Bootstrap Node
+
+Once the bootstrap process is complete the bootstrap node can be removed from the cluster. The bootstrap node is no longer required and will not be part of the final cluster.
+
+##### On the proxy machine
 
 Remove all references to the `bootstrap` host from the `/etc/haproxy/haproxy.cfg` file on the proxy machine
 
