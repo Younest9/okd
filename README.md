@@ -344,6 +344,12 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    scp ~/Downloads/<openshift-install_tar.gz_file_name> ~/Downloads/pull-secret.txt  root@<IP_ADDRESS>:/root/
    ```
+
+4. Move the Fedora CoreOS raw.xz file to it for your local machine (where you downloaded the file)
+   > `<IP_ADDRESS>` is the IP address of the proxy machine
+   ```bash
+   scp ~/Downloads/<fedora_coreos_raw_xz_file_name> root@<IP_ADDRESS>:/root/
+   ```
 5. SSH to the machine
 
    ```bash
@@ -508,10 +514,10 @@ The load balancer infrastructure must meet the following requirements:
    ```
    
 4. Update the ```install-config.yaml``` with your own ```pull-secret``` and ```ssh key```.
-   - Line 2 should contain your base domain
+   - Line 2 should contain your base domain (in our case ```osupytheas.fr```).
    - Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
-   - Line 12 should contain the cluster name
-   - Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable))
+   - Line 12 should contain the cluster name (in our case ```okd```)
+   - Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable)) (In our case ```OpenShiftSDN```)
    - Line 23 should contain the contents of your ```pull-secret.txt```
    - Line 24 should contain the contents of your '```~/.ssh/id_rsa.pub```'
 
@@ -524,7 +530,7 @@ The load balancer infrastructure must meet the following requirements:
    ~/openshift-install create manifests --dir ~/okd-install
    ```
 
-6. Disable the scheduler on the control plane nodes (masetr nodes) (recommended)
+6. Disable the scheduler on the control plane nodes (masetr nodes) (recommended) (we don't want to run workloads on the master nodes)
 
    ```bash
    sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
@@ -550,7 +556,7 @@ The load balancer infrastructure must meet the following requirements:
    mkdir /var/www/html/okd
    ```
 
-7. Copy all generated install files and the raw.xz image to that directory
+7. Copy all generated install files and the raw.xz image to that directory (We want to copy just the files, not the directories)
 
    ```bash
    cp  ~/okd-install/*  /var/www/html/okd/
