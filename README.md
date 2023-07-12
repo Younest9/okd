@@ -400,17 +400,9 @@ The load balancer infrastructure must meet the following requirements:
       export KUBE_EDITOR="nano"
       ```
 
-11. Set a Static IP for the network interface :
-   
-      The ```/etc/network/interfaces``` file contains network interface configuration information for Debian Linux. Hence, edit the file:
-   
-      ```bash
-      nano /etc/network/interfaces
-      ```
-   
-      Look for the primary network interface in the file:
-   
-      - Example: ```enp0s5```
+11. Verify that the network interface in the file ```/etc/network/interfaces``` ressembles the following:
+
+      - In this example, the network interface is: ```enp0s5```
         
         ```bash
         allow-hotplug enp0s5
@@ -430,16 +422,7 @@ The load balancer infrastructure must meet the following requirements:
             netmask 255.255.255.0
             gateway 192.168.2.254
          ```
-      Save and close the file in ```nano```. Restart the networking service:
-         
-      ```bash
-      systemctl restart networking
-      ```
-12. Install HAProxy
 
-      ```bash
-      apt-get install haproxy -y
-      ```
 13. Install & configure HAProxy
 
    - You can install HAProxy on any Linux distro, in our case:
