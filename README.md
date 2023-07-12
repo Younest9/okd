@@ -627,11 +627,11 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
    Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
    # Bootstrap Node - bootstrap
-   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http:// <Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
+   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
    ```
    ```bash
    # Each of the Control Plane Nodes (Master Nodes) - cp-\#
-   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://><Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
+   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
    ```
 
 - If you are using DHCP, you can just use the following commands to install OKD (without the ```--copy-network``` flag)
@@ -639,11 +639,11 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
   Use the following command then just reboot after it finishes and make sure you remove the attached .iso
    ```bash
    # Bootstrap Node - bootstrap
-   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
+   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
    ```
    ```bash
    # Each of the Control Plane Nodes (Master Nodes) - cp-\#
-   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
+   sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/master.ign -u http://<Host_apache_server>:<apache_server_port>/okd/fcos --insecure --insecure-ignition
    ```
 
 #### Monitor the Bootstrap Process
@@ -768,7 +768,7 @@ Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.
    >
    > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
 
-### Add a new worker node
+### Add a new worker node (experimental)
 
 You can add more Fedora CoreOS (FCOS) compute (worker) machines to your OKD cluster on bare metal.
 
