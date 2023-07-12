@@ -297,7 +297,7 @@ The load balancer infrastructure must meet the following requirements:
 
 
 
-3. Download the installation program named [```openshift-install-linux.tar.gz```](https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-02-18-033438/openshift-install-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
+3. Download the installation program named ```openshift-install-linux.tar.gz``` (not the one named ```openshift-install-linux-arm64.tar.gz```) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
 
 4. Download the Fedora CoreOS image (.iso and .raw.xz) from [the Fedora CoreOS Official Website](https://getfedora.org/en/coreos/download)
 
@@ -763,6 +763,106 @@ Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.
    > You will get self signed certificate warnings that you can ignore
    >
    > If you need to login as kubeadmin and need to the password again you can retrieve it with: `cat ~/okd-install/auth/kubeadmin-password`
+
+### Add a new worker node
+
+You can add more Fedora CoreOS (FCOS) compute (worker) machines to your OKD cluster on bare metal.
+
+Before you add more compute (worker) machines to a cluster that you installed on bare metal infrastructure, you must create FCOS machines for it to use. 
+
+#### Prerequisites
+
+- You must have a cluster that you installed on bare metal infrastructure.
+- You must have a machine that you want to add as a compute (worker) machine.
+- You must have the DNS records for the new machine configured ([see above](#user-provisioned-dns-requirements)).
+- You have the installation ISO for the the same version of FCOS that you used to install the cluster.
+
+#### Procedure
+
+##### On the proxy machine
+
+Extract the Ignition config file from the cluster by running the following command:
+   
+   ```bash
+   # On the proxy machine in our case
+   oc extract -n openshift-machine-api secret/worker-user-data-managed --keys=userData --to=- > worker.ign
+   ```
+
+Copy the ignition file to the apache server
+
+   ```bash
+   # On the proxy machine in our case
+   cp worker.ign /var/www/html/okd/
+   ```
+
+##### On the new worker node
+
+Boot the new machine from the installation ISO
+
+- If you are using a DHCP service, you can skip this step (you have to declare the ip address on the DHCP server).
+
+- If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now.
+   - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
+      - You can set a static ip address by editing the network configuartion while live booting the machine.
+         ```bash	
+         sudo nmtui-edit
+         ```
+         > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
+         > Restart the network service:
+         > ```bash
+         > sudo systemctl restart NetworkManager
+         > ```
+         > Then check by running:
+         > ```bash
+         > ip a
+         > ```
+      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
+         > `--copy-network` is only required if you are using static ip addresses.
+   
+
+Use the following command then just reboot after it finishes and make sure you remove the attached .iso
+```bash
+# Each of the Worker Nodes - worker-\#
+sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign--insecure--insecure-ignition --copy-network
+```
+> If you are using DHCP, you can just use the following commands to install OKD (without the```--copy-network``` flag)
+> ```bash
+> # Each of the Worker Nodes - worker-\#
+> sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure--insecure-ignition
+> ```
+
+##### On the proxy machine
+
+The cluster should not be able to see the new worker node yet, so we need to approve the certificate signing requests (CSRs) for the new worker node.
+
+```bash
+# Show the current nodes
+oc get nodes
+```
+
+So the next step is to approve pending CSRs
+
+   > **Note:** Once you approve the first set of CSRs additional 'kubelet-serving' CSRs will be created. These must be approved too.
+   >
+   > If you do not see pending requests wait until you do.
+
+   ```bash
+   # View CSRs
+   oc get csr
+   # Approve all pending CSRs
+   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+   # Wait for kubelet-serving CSRs and approve them too with the same command
+   oc get csr -o go-template='{{range .items}}{{if not .status}}{{.metadata.name}}{{"\n"}}{{end}}{{end}}' | xargs oc adm certificate approve
+   ```
+
+Watch and wait for the new Worker Node to join the cluster and enter a 'Ready' status
+
+   > This can take 5-10 minutes
+
+   ```bash
+   watch -n5 oc get nodes
+   ```
+
 
 ### Sources
 
