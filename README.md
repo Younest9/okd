@@ -311,6 +311,21 @@ The load balancer infrastructure must meet the following requirements:
 
 2. Boot the machine
 
+3. Install openssh-server if not already installed
+
+   ```bash
+   apt update && apt upgrade -y
+   apt install openssh-server
+   ```
+
+3. Change the sshd configuration to allow root login
+
+   - Edit the file `/etc/ssh/sshd_config` and change the line `PermitRootLogin` to `yes`
+   - Restart the sshd service
+      ```bash
+      systemctl restart sshd
+      ```
+
 3. Rename the openshift-install file to ```openshift-install-linux.tar.gz```
    - Sur linux, you can use the command ```mv <old_name> <new_name>```
       ```bash
