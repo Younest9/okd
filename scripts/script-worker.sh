@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set the desired network configuration values
-ipv4_address="172.20.9.148/23"
+ipv4_address="172.20.9.150/23"
 gateway="172.20.8.1"
 dns="172.20.9.10"
 search_domain="osupytheas.fr"
