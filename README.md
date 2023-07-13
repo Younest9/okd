@@ -513,12 +513,14 @@ The load balancer infrastructure must meet the following requirements:
    cp ~/okd/install-config.yaml ~/okd-install
    ```
    
-4. Update the ```install-config.yaml``` with your own ```pull-secret``` and ```ssh key```.
+4. Update the ```install-config.yaml``` with ```ssh key``` generated above by replacing the contents of ```sshKey``` with the contents of your ```~/.ssh/id_rsa.pub``` file
+
+> If you want to change default values, you can use the ```install-config-template.yaml``` file as a reference.
    - Line 2 should contain your base domain (in our case ```osupytheas.fr```).
    - Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
    - Line 12 should contain the cluster name (in our case ```okd```)
    - Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable)) (In our case ```OpenShiftSDN```)
-   - Line 23 should contain the contents of your ```pull-secret.txt```
+   - Line 23 should contain the contents of your ```pull-secret.txt``` (in our case ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}```)
    - Line 24 should contain the contents of your '```~/.ssh/id_rsa.pub```'
 
       ```bash
@@ -675,9 +677,10 @@ The bootstrap host can now be safely shutdown and deleted, the host is no longer
 
 #### Wait for installation to complete
 
-**IMPORTANT:** if you set mastersSchedulable to false the [worker nodes will need to be joined to the cluster](#join-worker-nodes) to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
+**IMPORTANT:** 
+- if you set mastersSchedulable to false the worker nodes will need to be joined to the cluster to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
-Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
+- Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
 
    ```bash
    # Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
@@ -734,6 +737,7 @@ Setup 'oc' and 'kubectl' clients on the proxy machine for now
    # Test auth by viewing cluster nodes
    oc get nodes
    ```
+Wait for the worker nodes to boot
 
 View and approve pending CSRs
 
@@ -870,6 +874,12 @@ Watch and wait for the new Worker Node to join the cluster and enter a 'Ready' s
    ```bash
    watch -n5 oc get nodes
    ```
+
+### Initial configuration
+
+Refer to the documentation to how to configure the cluster for the first time [here](config/README.md).
+
+### Troubleshooting
 
 
 ### Sources
