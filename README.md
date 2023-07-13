@@ -797,7 +797,7 @@ Extract the Ignition config file from the cluster by running the following comma
    
    ```bash
    # On the proxy machine in our case
-   oc extract -n openshift-machine-api secret/worker-user-data-managed --keys=userData --to=- > worker.ign
+   oc extract -n openshift-machine-api secret/worker-user-data --keys=userData --to=- > worker.ign
    ```
 
 Copy the ignition file to the apache server
@@ -880,6 +880,72 @@ Watch and wait for the new Worker Node to join the cluster and enter a 'Ready' s
 Refer to the documentation to how to configure the cluster for the first time [here](config/README.md).
 
 ### Troubleshooting
+
+#### Logging
+
+You can see logs for the bootstrap process also by running the following command:
+
+   ```bash
+   # On the proxy machine in our case
+   ssh core@<bootstrap_ip>
+   journalctl -b -f -u bootkube.service -u release-image.service
+   ```
+> You can get the logs also if you check the ```.openshift_install.log``` file on the proxy machine (```~/okd-install/.openshift_install.log```)
+#### Debug
+
+You can debug a node in 2 ways:
+
+- By using the `oc debug` command and get a shell on the node
+   ```bash
+   # On the proxy machine in our case
+   oc debug node/<node_name>
+   ```
+
+- By using the `ssh` command and get a shell on the node
+   ```bash
+   # On the proxy machine in our case
+   ssh core@<node_ip>
+   ```
+
+#### Restart a node
+
+You can restart a node by running the following command:
+
+   ```bash
+   # On the proxy machine in our case
+   oc adm drain <node_name> --ignore-daemonsets --force --delete-emptydir-data
+   oc adm cordon <node_name>
+   ssh core@<node_ip> sudo systemctl reboot
+   ```
+
+In case of a failure, sudden shutdown or restart, you drain the node and then restart it (even if the node is shutdown or restarted by itself, you still have to drain it and restart it)
+```bash
+# On the proxy machine in our case
+oc adm drain <node_name> --ignore-daemonsets --force --delete-emptydir-data
+oc adm cordon <node_name>
+ssh core@<node_ip> sudo systemctl reboot
+```
+
+#### Proxy machine (precision)
+
+In the present documentation, we are using a proxy machine to setup configuration files, web server, etc. 
+Also, the important reason, is that on the proxy machine, we have the ```kubeconfig``` file that we use to connect to the cluster as ```system:admin```.
+For this reason, we execute all the commands on the proxy machine, but you can execute them on any machine that has access to the cluster (```kubeconfig``` file, or [```oc``` command configured to connect to the cluster](#oc-connection-to-the-cluster)).
+
+#### `oc` connection to the cluster
+
+To connect to the cluster using the oc command, you need to have an account on the cluster (user and password).
+
+Use the following command to login to the cluster:
+```bash
+# On any machine
+oc login https://api.<cluster_name>.<domain>:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
+```
+
+> In our case, the command will be:
+> ```bash
+> oc login https://api.okd.osupytheas.fr:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
+> ```
 
 
 ### Sources
