@@ -8,7 +8,7 @@ spec:
     - ReadWriteOnce # ReadWriteMany - ReadOnlyMany
   selector:
     matchLabels:
-      app: fibi
+      app: test
   resources:
     requests:
       storage: 1Gi # Must be under or equal to the size of the pv

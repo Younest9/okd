@@ -3,28 +3,31 @@ kind: PersistentVolume
 metadata:
   name: ssl
   labels:
-    app: fibi
+    app: test
 spec:
   capacity:
     storage: 1Gi
-  # le champ volumeMode requiert l'activation de la "feature gate" Alpha BlockVolume
   volumeMode: Filesystem # Block
   accessModes:
   - ReadWriteOnce #ReadWriteMany - ReadOnlyMany
   persistentVolumeReclaimPolicy: Retain  # Delete 
-  storageClassName: manual
+  storageClassName: manual # default - nfs-storage
   claimRef:
     namespace: test-dev
     name: ssl
-  local:
-    path: /etc/ssl/private # or /path/to/file
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - okd-cp-1.okd.osupytheas.fr
-          - okd-cp-2.okd.osupytheas.fr
-          - okd-cp-3.okd.osupytheas.fr
+  ### Local storage ###
+  # local:
+  #   path: /etc/ssl/private # or /path/to/file
+  # nodeAffinity:
+  #   required:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/hostname
+  #         operator: In
+  #         values:
+  #         - worker-1.okd.osupytheas.fr
+  #         - worker-2.okd.osupytheas.fr
+  ### NFS storage ###
+  # nfs:
+  #   path: /mnt/md72/UMS/okd
+  #   server: 172.20.9.100
