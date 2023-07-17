@@ -232,6 +232,4 @@ exit the editor and save the changes.
 
 Now we should be able to mount nfs volumes in the containers.
 
-
-
 Refer to the [README.md in the wordpress repository](https://gitlab.osupytheas.fr/yelarjouni/deployer-wordpress-okd) for instructions on how to deploy Wordpress.
