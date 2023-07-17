@@ -265,8 +265,8 @@ This document has provided a list of essential commands for using and navigating
 
 - [OKD CLI Reference](https://docs.okd.io/latest/cli_reference/openshift_cli/getting-started-cli.html)
 - [OKD CLI Cheat Sheet](https://www.openshift.com/blog/openshift-cli-commands-for-beginners)
-- [OpenShift command cheat sheet](https://github.com/nekop/openshift-sandbox/blob/master/docs/command-cheatsheet.md)
-- [OpenShift cheat sheet](./openshift_cheat_sheet_r5v1.pdf)
+- [OpenShift command cheat sheet - Github User "nekop"](https://github.com/nekop/openshift-sandbox/blob/master/docs/command-cheatsheet.md)
+- [OpenShift cheat sheet in a pdf form written by a systems engineer from RedHat - BEN PRITCHETT](./openshift_cheat_sheet_r5v1.pdf)
 - [OpenShift CLI (oc) developer commands](https://docs.okd.io/latest/cli_reference/openshift_cli/developer-cli-commands.html)
 - [OpenShift CLI (oc) administrator commands](https://docs.okd.io/latest/cli_reference/openshift_cli/administrator-cli-commands.html)
 
