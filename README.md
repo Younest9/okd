@@ -947,6 +947,10 @@ oc login https://api.<cluster_name>.<domain>:6443 -u <user_name> -p <password> -
 > oc login https://api.okd.osupytheas.fr:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
 > ```
 
+#### `oc` commands
+
+Check the [navigation section](./navigation/README.md) of this repository to see how to use the oc command.
+
 ### Sources
 
 - [OKD 4.3 Architecture](https://docs.okd.io/latest/architecture/architecture.html)
