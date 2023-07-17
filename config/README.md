@@ -57,7 +57,7 @@ kind: ClusterRole
 metadata:
   name: cert-manager
 rules:
-- apiGroups: ["v1"]
+- apiGroups: [""]
   resources: ["secrets"]
   verbs: ["create", "update", "delete"]
 ```
