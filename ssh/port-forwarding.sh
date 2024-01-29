@@ -20,13 +20,22 @@ else
         echo "Please enter your username: "
         read username
         echo ""
+    done
+    while true; do
         echo "Please enter your password: "
         read password
         echo ""
+    done
+    while true; do
+        echo "Please enter your API endpoint for the cluster (don't forget the https:// prefix and the port number): "
+        read endpoint
+        echo ""
+    done
+    while true; do
         echo "Connecting to the cluster using your credentials..."
         echo ""
         echo ""
-        oc login -u $username -p $password -s https://api.okd.osupytheas.fr:6443 --insecure-skip-tls-verify -n dev > /dev/null 2>&1
+        oc login -u $username -p $password -s $endpoint --insecure-skip-tls-verify -n dev > /dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo "Successfully logged in"
             break
