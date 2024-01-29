@@ -1,5 +1,6 @@
 # OKD
-## Overview 
+
+## Overview
 
 - OKD is a distribution of Kubernetes optimized for continuous application development and multi-tenant deployment
 
@@ -12,32 +13,31 @@
 - OKD is a sibling Kubernetes distribution to Red Hat OpenShift
 
 ## Difference between OKD and OCP (Openshift Container Platform)
+
  The difference between OKD et OCP (Openshift Container Platform) is that OKD is a community supported and totally free to use and modify version of Kubernetes (somewhat similar to Fedora compared to RHEL in terms of being upstream of the commercial product) and it uses Fedora CoreOS as the base OS for the cluster, on the other hand, OCP (Openshift Container Platform) is a subscription-based hybrid cloud enterprise Kubernetes platform that is supported by Red Hat, and it uses Redhat CoreOS.
 
 ## OKD Bare Metal Install - User Provisioned Infrastructure (UPI)
 
-- [OKD Bare Metal Install - User Provisioned Infrastructure (UPI)](#OKD-4-bare-metal-install---user-provisioned-infrastructure-upi)
+- [OKD Bare Metal Install - User Provisioned Infrastructure (UPI)](#okd)
   - [Architecture Diagram](#architecture-diagram)
   - [Requirements for a cluster with user-provisioned infrastructure](#requirements-for-a-cluster-with-user-provisioned-infrastructure)
     - [Required machines for cluster installation](#required-machines-for-cluster-installation)
     - [Minimum resource requirements for cluster installation](#minimum-resource-requirements-for-cluster-installation)
     - [Networking requirements for cluster installation](#networking-requirements-for-cluster-installation)
-   - [DNS requirements](#user-provisioned-dns-requirements)
-   - [Load balancing requirements](#load-balancing-requirements-for-user-provisioned-infrastructure)
-   - [Files required for cluster installation](#files-to-download)
-   - [Load Balancer and Proxy configuration](#configure-the-load-balancer-and-the-ingress-controller)
-   - [IP Addressing](#configure-ip-addressing)
-   - [Cluster configuration (Generate and host the install files on an web server)](#generate-and-host-install-files)
-   - [Deploy OKD](#deploy-okd)
-      - [Install OKD](#install-okd)
-      - [Monitor the Bootstrap Process](#monitor-the-bootstrap-process)
-      - [Wait for installation to complete](#wait-for-installation-to-complete)
-      - [Join the worker nodes](#join-worker-nodes)
-      - [Access the OKD web console](#access-the-openshift-console)
-   - [Sources and References](#sources)
+  - [DNS requirements](#user-provisioned-dns-requirements)
+  - [Load balancing requirements](#load-balancing-requirements-for-user-provisioned-infrastructure)
+  - [Files required for cluster installation](#files-to-download)
+  - [Load Balancer and Proxy configuration](#configure-the-load-balancer-and-the-ingress-controller-proxy-machine)
+  - [IP Addressing](#configure-ip-addressing)
+  - [Cluster configuration (Generate and host the install files on an web server)](#generate-and-host-install-files)
+  - [Deploy OKD](#deploy-okd)
+    - [Install OKD](#install-okd)
+    - [Monitor the Bootstrap Process](#monitor-the-bootstrap-process)
+    - [Wait for installation to complete](#wait-for-installation-to-complete)
+    - [Join the worker nodes](#join-worker-nodes)
+    - [Access the OKD web console](#access-the-openshift-console)
+  - [Sources and References](#sources)
 
-  
-  
 ### Architecture Diagram
 
 It's the same architecture as the OpenShift Container Platform, but without the RedHat subscription and without the RedHat CoreOS.
@@ -49,6 +49,7 @@ It's the same architecture as the OpenShift Container Platform, but without the 
    For a cluster that contains user-provisioned infrastructure, you must deploy all of the required machines.
 
    This section describes the requirements for deploying OKD on user-provisioned infrastructure.
+
 #### Required machines for cluster installation
 
 The smallest OKD clusters require the following hosts:
@@ -137,7 +138,7 @@ Reverse DNS resolution is also required for the Kubernetes API, the bootstrap ma
 
 DNS A/AAAA or CNAME records are used for name resolution and PTR records are used for reverse name resolution. The reverse records are important because Fedora CoreOS (FCOS) uses the reverse records to set the hostnames for all the nodes, unless the hostnames are provided by DHCP. Additionally, the reverse records are used to generate the certificate signing requests (CSR) that OKD needs to operate.
 
-The following DNS records are required for a user-provisioned OKD cluster and they must be in place before installation. In each record, <cluster_name> is the cluster name and <base_domain> is the base domain that you specify in the install-config.yaml file. A complete DNS record takes the form: <component>.<cluster_name>.<base_domain>..
+The following DNS records are required for a user-provisioned OKD cluster and they must be in place before installation. In each record, `<cluster_name>` is the cluster name and `<base_domain>` is the base domain that you specify in the install-config.yaml file. A complete DNS record takes the form: `<component>.<cluster_name>.<base_domain>.`
 
 For example, if you specify the cluster name as okd and the base domain as osupytheas.fr, the DNS record for the Kubernetes API is api.okd.osupytheas.fr., and so on.
 
@@ -152,12 +153,12 @@ Required DNS and reverse DNS records:
 | Compute (worker) machines | worker-&lt;n&gt;.<cluster_name>.<base_domain>. | DNS A/AAAA or CNAME records and DNS PTR records to identify each machine for the worker nodes. These records must be resolvable by the nodes within the cluster. |
 
 ##### Example DNS Configuration for a User-Provided Infrastructure
+
 In this example, the cluster name is okd and the base domain is osupytheas.fr.
 
 - DNS Records:
 
-
-   ```
+   ```text
    ; Temp Bootstrap Node
    bootstrap.okd.osupytheas.fr.        IN      A      <ip_address_reserved_for_bootstrap_node_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
@@ -195,7 +196,7 @@ In this example, the cluster name is okd and the base domain is osupytheas.fr.
 
 - Reverse DNS Records:
 
-   ```
+   ```text
    ; OKD Internal - Load balancer
    <the_static_ip_address_we_setup_reversed>      IN    PTR    proxy.okd.osupytheas.fr. ;; Optional, if not specified, must set a static IP for the proxy machine.
    <the_static_ip_address_we_setup_reversed>      IN    PTR    api.okd.osupytheas.fr.
@@ -218,7 +219,6 @@ In this example, the cluster name is okd and the base domain is osupytheas.fr.
 >
 > A PTR record is not required for the OKD application wildcard.
 
-
 #### Load balancing requirements for user-provisioned infrastructure
 
 Before you install OKD, you must provision the API and application Ingress load balancing infrastructure. In production scenarios, you can deploy the API and application Ingress load balancers separately so that you can scale the load balancer infrastructure for each in isolation.
@@ -230,7 +230,7 @@ The load balancer infrastructure must meet the following requirements:
    - A stateless load balancing algorithm. The options vary based on the load balancer implementation.
 
    Configure the following ports on both the front and back of the load balancers:
-   
+
    API load balancer:
    | Port | Back-end machines (pool members) | Internal | External | Description |
    | ---- | -------------------------------- | -------- | -------- | ----------- |
@@ -245,24 +245,23 @@ The load balancer infrastructure must meet the following requirements:
 
 > **Tip:**
 >
->  If the true IP address of the client can be seen by the application Ingress load balancer, enabling source IP-based session persistence can improve performance for applications that use end-to-end TLS encryption.
+> If the true IP address of the client can be seen by the application Ingress load balancer, enabling source IP-based session persistence can improve performance for applications that use end-to-end TLS encryption.
 
    Configure the following ports on both the front and back of the load balancers:
-   
+
    Application Ingress load balancer:
    | Port | Back-end machines (pool members) | Internal | External | Description |
    | ---- | -------------------------------- | -------- | -------- | ----------- |
    | 443 | The machines that run the Ingress Controller pods, compute, or worker, by default. | <p align="center">✅</p> | <p align="center">✅</p> | HTTPS traffic |
    | 80 | The machines that run the Ingress Controller pods, compute, or worker, by default. | <p align="center">✅</p> | <p align="center">✅</p> | HTTP traffic |
 
-
 ### Files to download
 
 1. Download any Linux based OS you want, this will server as the load balancer and the ingress controller (proxy machine)
 
-   -  In this example, we'll go with Debian 12 iso.
-   -  You can download it via the official website: https://www.debian.org/distrib/netinst
-   -  For quick download, you can [click here to download debian 12.0.0-amd64-netinst](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso), because that's what we'll be working with.
+   - In this example, we'll go with Debian 12 iso.
+   - You can download it via the official website: <https://www.debian.org/distrib/netinst>
+   - For quick download, you can [click here to download debian 12.0.0-amd64-netinst](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso), because that's what we'll be working with.
 
 2. For the pull secret, it's not mandatory to use the one from RedHat, you can use this one instead:
 
@@ -275,19 +274,20 @@ The load balancer infrastructure must meet the following requirements:
       }
    }
    ```
+
       Copy it to a file on the Downloads folder of your local machine and name it `pull-secret.txt`.
 
    > This ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` to copy-paste easily.
-
+   >
    > You can use the one from RedHat if you want, but you'll need to create an account on their website, and you'll need to have a valid subscription to continue using the cluster after the 60 days trial.
    > You have to download the pull secret from the [RedHat OpenShift Cluster Manager](https://cloud.redhat.com/openshift)
-   > -  Select 'Create Cluster' from the 'Clusters' navigation menu
-   > -  Select 'RedHat OpenShift Container Platform'
-   > -  Select 'Run on Bare Metal'
-   > -  Download Pull secret
-   > -  Copy the pull secret to a file on the proxy machine
+   > - Select 'Create Cluster' from the 'Clusters' navigation menu
+   > - Select 'RedHat OpenShift Container Platform'
+   > - Select 'Run on Bare Metal'
+   > - Download Pull secret
+   > - Copy the pull secret to a file on the proxy machine
    >
-   > 
+   >
    > **Note:**
    >
    > If you do not use the pull secret from the Red Hat OpenShift Cluster Manager:
@@ -295,15 +295,12 @@ The load balancer infrastructure must meet the following requirements:
    > - The Telemetry and Insights operators do not send data to Red Hat.
    > - Content from the Red Hat Ecosystem Catalog Container images registry, such as image streams and Operators, are not available.
 
-
-
 3. Download the installation program named ```openshift-install-linux.tar.gz``` (not the one named ```openshift-install-linux-arm64.tar.gz```) from [the OKD Github Repository](https://github.com/okd-project/okd/releases)
 
 4. Download the Fedora CoreOS image (.iso and .raw.xz) from [the Fedora CoreOS Official Website](https://getfedora.org/en/coreos/download)
 
 5. If you want to use static IP addresses, write down all IP addresses of all machines.
    > If you want to use DHCP, write down all MAC addresses of all machines.
-
 
 ### Configure the load balancer and the ingress controller (proxy machine)
 
@@ -318,87 +315,97 @@ The load balancer infrastructure must meet the following requirements:
    apt install openssh-server
    ```
 
-3. Change the sshd configuration to allow root login
+4. Change the sshd configuration to allow root login
 
    - Edit the file `/etc/ssh/sshd_config` and change the line `PermitRootLogin` to `yes`
    - Restart the sshd service
+
       ```bash
       systemctl restart sshd
       ```
 
-3. Rename the openshift-install file to ```openshift-install-linux.tar.gz```
+5. Rename the openshift-install file to ```openshift-install-linux.tar.gz```
    - Sur linux, you can use the command ```mv <old_name> <new_name>```
+
       ```bash
       mv <current_name> openshift-install-linux.tar.gz
       ```
+
    - Sur windows, you can use the command ```ren <old_name> <new_name>```
+
       ```bash
       ren <current_name> openshift-install-linux.tar.gz
       ```
+
       Or you can rename it manually.
 <br><br>
 
-
-3. Move the ```openshift-install-linux.tar.gz``` file to it for your local machine (where you downloaded the file), in addition of the pull secret file (```pull-secret.txt```)
+6. Move the ```openshift-install-linux.tar.gz``` file to it for your local machine (where you downloaded the file), in addition of the pull secret file (```pull-secret.txt```)
    > `<IP_ADDRESS>` is the IP address of the proxy machine
+
    ```bash
    scp ~/Downloads/<openshift-install_tar.gz_file_name> ~/Downloads/pull-secret.txt  root@<IP_ADDRESS>:/root/
    ```
 
-4. Move the Fedora CoreOS raw.xz file to it for your local machine (where you downloaded the file)
+7. Move the Fedora CoreOS raw.xz file to it for your local machine (where you downloaded the file)
    > `<IP_ADDRESS>` is the IP address of the proxy machine
+
    ```bash
    scp ~/Downloads/<fedora_coreos_raw_xz_file_name> root@<IP_ADDRESS>:/root/
    ```
-5. SSH to the machine
+
+8. SSH to the machine
 
    ```bash
    ssh root@<IP_ADDRESS>
    ```
-6. Navigate to https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/ and choose the folder for your operating system and architecture, and download ```oc.tar.gz```.
+
+9. Navigate to <https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/> and choose the folder for your operating system and architecture, and download ```oc.tar.gz```.
 
    Unpack the archive:
-   
+
    ```bash
    tar xvf oc.tar.gz
    ```
+
    Place the ```oc``` binary in a directory that is on your ```PATH```.
-   
+
    ```bash
    echo $PATH
    mv oc kubectl /usr/local/bin
    ```
-   
+
    Confirm Client Tools are working
 
    ```bash
    kubectl version
    oc version
    ```
-   
-7. Extract the OpenShift Installer
+
+10. Extract the OpenShift Installer
 
    ```bash
    tar xvf openshift-install-linux.tar.gz
    ```
 
-8. Update the OS so we get the latest packages for each of the services we are about to install (```haproxy```, ```git```, ```apache2```)
+11. Update the OS so we get the latest packages for each of the services we are about to install (```haproxy```, ```git```, ```apache2```)
 
    ```bash
    apt-get update && apt-get upgrade -y
    ```
-   
-9. Install Git
-   
+
+12. Install Git
+
    ```bash
    apt-get install git -y
    ```
-   
-10. Download [config files](https://github.com/Younest9/okd) for each of the steps we are about to do (```haproxy.cfg```, ```install-config.yaml```)
+
+13. Download [config files](https://github.com/Younest9/okd) for each of the steps we are about to do (```haproxy.cfg```, ```install-config.yaml```)
 
       ```bash
       git clone https://gitlab.osupytheas.fr/yelarjouni/okd.git
       ```
+
       Change the preferred editor to "```nano```" (optional)
 
       ```bash
@@ -406,16 +413,17 @@ The load balancer infrastructure must meet the following requirements:
       export KUBE_EDITOR="nano"
       ```
 
-11. Verify that the network interface in the file ```/etc/network/interfaces``` ressembles the following:
+14. Verify that the network interface in the file ```/etc/network/interfaces``` ressembles the following:
 
       - In this example, the network interface is: ```enp0s5```
-        
+
         ```bash
         allow-hotplug enp0s5
         iface enp0s5 inet dhcp
         ```
+
          Remove dhcp and allow-hotplug lines. Append the following configuration to set up/add new static IP on Debian Linux 10/11. Here is a sample config file:
-      
+
          ```bash
          # The loopback network interface
          auto lo
@@ -429,31 +437,32 @@ The load balancer infrastructure must meet the following requirements:
             gateway 192.168.2.254
          ```
 
-13. Install & configure HAProxy
+15. Install & configure HAProxy
 
-   - You can install HAProxy on any Linux distro, in our case:
-   
+- You can install HAProxy on any Linux distro, in our case:
+
         ```bash
       apt -y install haproxy 
         ```
-      
-   - Modify the config before starting haproxy
-   
-        - you can only modify the ip addresses to not break the config file.
-   
-   - Copy HAProxy config
+
+- Modify the config before starting haproxy
+
+  - you can only modify the ip addresses to not break the config file.
+
+- Copy HAProxy config
 
       ```bash
      \cp ~/okd/haproxy.cfg /etc/haproxy/haproxy.cfg
       ```
-   
-   - Enable and start the service
+
+- Enable and start the service
 
       ```bash
       systemctl enable haproxy
       systemctl start haproxy
       systemctl status haproxy
       ```
+
 #### Configure IP addressing
 
 - If not using DHCP, you will be configuring the static IP addresses for the cluster nodes later, so you can skip this step.
@@ -463,35 +472,46 @@ The load balancer infrastructure must meet the following requirements:
    > - Add persistent IP addresses for the nodes to your DHCP server configuration. In your configuration, match the MAC address of the relevant network interface to the intended IP address for each node.
    >
    > - When you use DHCP to configure IP addressing for the cluster machines, the machines also obtain the DNS server information through DHCP. Define the persistent DNS server address that is used by the cluster nodes through your DHCP server configuration.
-   >   
+   >
    > - Define the hostnames of your cluster nodes in your DHCP server configuration. See the Setting the cluster node hostnames through DHCP section for details about hostname considerations.
 
 #### Install & configure Apache Web Server
+>
 > Necessary to download the config files to passe in as arguments in the installation command
   
-  - You can install ```apache``` on any Linux distro, in our case on the proxy machine (load balancer) that has Debian 12, so we will use ```apt``` to install it:
-     ```
+- You can install ```apache``` on any Linux distro, in our case on the proxy machine (load balancer) that has Debian 12, so we will use ```apt``` to install it:
+
+     ```bash
      apt install apache2 -y
      ```
-   - Start the service:
-     ```
+
+- Start the service:
+
+     ```bash
      systemctl start apache2
      ```
-   - Enable the service:
-     ```
+
+- Enable the service:
+
+     ```bash
      systemctl enable apache2
      ```
-   
-      > If you are installing ```apache``` on the proxy machine, you need to change the port of the service to 8080, because the load balancer will be listening on port 80.
-      > To do so, edit the file ```/etc/apache2/ports.conf``` and change the port from 80 to 8080.
-      > Or you can just execute the following command:
-      > ```
-      > sed -i 's/80/8080/g' /etc/apache2/ports.conf
-      > ```
-      > Then restart the service:
-      > ```
-      > systemctl restart apache2
-      > ```
+
+   > If you are installing ```apache``` on the proxy machine, you need to change the port of the service to 8080, because the load balancer will be listening on port 80.
+   >
+   > To do so, edit the file ```/etc/apache2/ports.conf``` and change the port from 80 to 8080.
+   >
+   > Or you can just execute the following command:
+   >
+   > ```bash
+   > sed -i 's/80/8080/g' /etc/apache2/ports.conf
+   > ```
+   >
+   > Then restart the service:
+   >
+   > ```bash
+   > systemctl restart apache2
+   > ```
 
 ### Generate and host install files
 
@@ -512,20 +532,22 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    cp ~/okd/install-config.yaml ~/okd-install
    ```
-   
+
 4. Update the ```install-config.yaml``` with ```ssh key``` generated above by replacing the contents of ```sshKey``` with the contents of your ```~/.ssh/id_rsa.pub``` file
 
 > If you want to change default values, you can use the ```install-config-template.yaml``` file as a reference.
-   - Line 2 should contain your base domain (in our case ```osupytheas.fr```).
-   - Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
-   - Line 12 should contain the cluster name (in our case ```okd```)
-   - Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable)) (In our case ```OpenShiftSDN```)
-   - Line 23 should contain the contents of your ```pull-secret.txt``` (in our case ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}```)
-   - Line 24 should contain the contents of your '```~/.ssh/id_rsa.pub```'
 
-      ```bash
-      nano ~/okd-install/install-config.yaml
-      ```
+- Line 2 should contain your base domain (in our case ```osupytheas.fr```).
+- Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
+- Line 12 should contain the cluster name (in our case ```okd```)
+- Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable)) (In our case ```OpenShiftSDN```)
+- Line 23 should contain the contents of your ```pull-secret.txt``` (in our case ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}```)
+- Line 24 should contain the contents of your '```~/.ssh/id_rsa.pub```'
+
+   ```bash
+   nano ~/okd-install/install-config.yaml
+   ```
+
 5. Generate Kubernetes manifest files
 
    ```bash
@@ -537,12 +559,15 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
    ```
+
    > A warning is shown about making the control plane nodes (master nodes) schedulable. It is up to you if you want to run workloads on the Control Plane nodes (master nodes).
    >
    > If you want to, you can enable it (not recommended) with:
+>
    > ```bash
    > sed -i 's/mastersSchedulable: false/mastersSchedulable: true/' ~/okd-install/manifests/cluster-scheduler-02-config.yml
    > ```
+>
    > Make any other custom changes you like to the core Kubernetes manifest files.
    > If you enable the masters, you can add them to the http and https ingress in the ```haproxy.cfg``` file by uncommenting the corresponding lines (lines 86, 87, 88 and 100, 101, 102) in the haproxy.cfg file.
 
@@ -551,36 +576,40 @@ The load balancer infrastructure must meet the following requirements:
    ```bash
    ~/openshift-install create ignition-configs --dir ~/okd-install/
    ```
-   
-6. Create a hosting directory to serve the configuration files for the OKD booting process where the web server will be hosted
+
+8. Create a hosting directory to serve the configuration files for the OKD booting process where the web server will be hosted
 
    ```bash
    mkdir /var/www/html/okd
    ```
 
-7. Copy all generated install files and the raw.xz image to that directory (We want to copy just the files, not the directories)
+9. Copy all generated install files and the raw.xz image to that directory (We want to copy just the files, not the directories)
 
    ```bash
    cp  ~/okd-install/*  /var/www/html/okd/
    ```
-8. Copy the raw.xz image to the web server directory (rename it to ```fcos``` to shorten the file name) becasue we will be typing it in the installation command later (the shorter the better):
+
+10. Copy the raw.xz image to the web server directory (rename it to ```fcos``` to shorten the file name) becasue we will be typing it in the installation command later (the shorter the better):
 
    ```bash
    cp  ~/okd/fedora-coreos-<whatever_version_you_downloaded>.raw.xz  /var/www/html/okd/fcos
    ```
-   > Example name: fedora-coreos-38.20230514.3.0-live.x86_64.raw.xz 
-9. Change permissions of the web server directory
+
+   > Example name: fedora-coreos-38.20230514.3.0-live.x86_64.raw.xz
+11. Change permissions of the web server directory
 
    ```bash
    chmod +r /var/www/html/okd/*
    ```
-   
-10. Confirm you can see all files added to the `/var/www/html/okd/` dir through ```Apache```
+
+12. Confirm you can see all files added to the `/var/www/html/okd/` dir through ```Apache```
 
       ```bash
       curl localhost:8080/okd/
       ```
+
       > Note: If you are not on the same machine as the ```haproxy``` server, you can use the following command to test the web server:
+>
       > ```bash
       > curl localhost/okd/
       > ```
@@ -588,20 +617,22 @@ The load balancer infrastructure must meet the following requirements:
 ### Deploy OKD
 
 Recap: You should have 7 machines
+
 - 1 machine for the load balancer (haproxy) that has:
-   - Debian 12 installed
-   - HAProxy installed and configured
-   - Apache installed and configured
-   - Ignition files (bootstrap.ign, master.ign and worker.ign) and fedora CoreOS raw.xz file (fcos) hosted on Apache
+  - Debian 12 installed
+  - HAProxy installed and configured
+  - Apache installed and configured
+  - Ignition files (bootstrap.ign, master.ign and worker.ign) and fedora CoreOS raw.xz file (fcos) hosted on Apache
 - 1 machine for the bootstrap node that has:
-   - Fedora CoreOS iso mounted
-   - Not booted yet
+  - Fedora CoreOS iso mounted
+  - Not booted yet
 - 3 machines for the control plane nodes (master nodes) that have:
-   - Fedora CoreOS iso mounted
-   - Not booted yet
+  - Fedora CoreOS iso mounted
+  - Not booted yet
 - 2 machines for the compute nodes (worker nodes) that have:
-   - Fedora CoreOS iso mounted
-   - Not booted yet
+  - Fedora CoreOS iso mounted
+  - Not booted yet
+
 #### Install OKD
 
 Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
@@ -609,28 +640,36 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
 - If you are using a DHCP service, you can skip this step (you've already done it).
 
 - If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now (use can use the scripts in the ```scripts``` directory to help you with that (experimental)).
-   - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
-      - You can set a static ip address by editing the network configuartion while live booting the machine.
-         ```bash	
+  - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
+    - You can set a static ip address by editing the network configuartion while live booting the machine.
+
+         ```bash
          sudo nmtui-edit
          ```
+
          > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
          > Restart the network service:
+>
          > ```bash
          > sudo systemctl restart NetworkManager
          > ```
+>
          > Then check by running:
+>
          > ```bash
          > ip a
          > ```
-      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
-          > `--copy-network` is only required if you are using static ip addresses.
+>
+- You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
+   > `--copy-network` is only required if you are using static ip addresses.
 
    Use the following command then just reboot after it finishes and make sure you remove the attached .iso
+
    ```bash
    # Bootstrap Node - bootstrap
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
    ```
+
    ```bash
    # Each of the Control Plane Nodes (Master Nodes) - cp-\#
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/master.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition --copy-network
@@ -639,10 +678,12 @@ Power on the bootstrap host and cp-# hosts, and boot up to the live ISO.
 - If you are using DHCP, you can just use the following commands to install OKD (without the ```--copy-network``` flag)
   
   Use the following command then just reboot after it finishes and make sure you remove the attached .iso
+
    ```bash
    # Bootstrap Node - bootstrap
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/bootstrap.ign -u http://<Host_apache_server>/okd/fcos --insecure --insecure-ignition
    ```
+
    ```bash
    # Each of the Control Plane Nodes (Master Nodes) - cp-\#
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>:<apache_server_port>/okd/master.ign -u http://<Host_apache_server>:<apache_server_port>/okd/fcos --insecure --insecure-ignition
@@ -677,7 +718,8 @@ The bootstrap host can now be safely shutdown and deleted, the host is no longer
 
 #### Wait for installation to complete
 
-**IMPORTANT:** 
+**IMPORTANT:**
+
 - if you set mastersSchedulable to false the worker nodes will need to be joined to the cluster to complete the installation. This is because the OKD Router will need to be scheduled on the worker nodes and it is a dependency for cluster operators such as ingress, console and authentication.
 
 - Collect the OpenShift Console address and kubeadmin credentials from the output of the install-complete event on the proxy machine
@@ -694,35 +736,42 @@ Continue to [join the worker nodes to the cluster](#join-worker-nodes) in a new 
 ##### On the worker nodes
 
 Power on the worker hosts and boot up to the live ISO.
-   
 
 - If you are using a DHCP service, you can skip this step (you've already done it).
 
 - If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now.
-   - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
-      - You can set a static ip address by editing the network configuartion while live booting the machine.
-         ```bash	
+  - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
+    - You can set a static ip address by editing the network configuartion while live booting the machine.
+
+         ```bash
          sudo nmtui-edit
          ```
+
          > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
          > Restart the network service:
+>
          > ```bash
          > sudo systemctl restart NetworkManager
          > ```
+>
          > Then check by running:
+>
          > ```bash
          > ip a
          > ```
-      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
-         > `--copy-network` is only required if you are using static ip addresses.
-   
+>
+- You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
+   > `--copy-network` is only required if you are using static ip addresses.
 
    Use the following command then just reboot after it finishes and make sure you remove the attached .iso
+
    ```bash
    # Each of the Worker Nodes - worker-\#
    sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure--insecure-ignition --copy-network
    ```
+
    > If you are using DHCP, you can just use the following commands to install OKD (without the ```--copy-network``` flag)
+>
    > ```bash
    > # Each of the Worker Nodes - worker-\#
    > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure --insecure-ignition
@@ -737,6 +786,7 @@ Setup 'oc' and 'kubectl' clients on the proxy machine for now
    # Test auth by viewing cluster nodes
    oc get nodes
    ```
+
 Wait for the worker nodes to boot
 
 View and approve pending CSRs
@@ -769,7 +819,7 @@ Wait for the 'Console' Cluster Operator to become available
    ```bash
    oc get co
    ```
-   
+
 Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.<Cluster_name>.<Base_domain>``) and log in as the 'kubeadmin' user
 
    > You will get self signed certificate warnings that you can ignore
@@ -780,7 +830,7 @@ Navigate to the OpenShift Console URL (``https://console-openshift-console.apps.
 
 You can add more Fedora CoreOS (FCOS) compute (worker) machines to your OKD cluster on bare metal.
 
-Before you add more compute (worker) machines to a cluster that you installed on bare metal infrastructure, you must create FCOS machines for it to use. 
+Before you add more compute (worker) machines to a cluster that you installed on bare metal infrastructure, you must create FCOS machines for it to use.
 
 #### Prerequisites
 
@@ -794,7 +844,7 @@ Before you add more compute (worker) machines to a cluster that you installed on
 ##### On the proxy machine
 
 Extract the Ignition config file from the cluster by running the following command:
-   
+
    ```bash
    # On the proxy machine in our case
    oc extract -n openshift-machine-api secret/worker-user-data --keys=userData --to=- > worker.ign
@@ -814,30 +864,38 @@ Boot the new machine from the installation ISO
 - If you are using a DHCP service, you can skip this step (you have to declare the ip address on the DHCP server).
 
 - If you are using static ip addresses, change the network configuration to match your DNS records and IP addresses, remember when we said we will be configuring the ip addresses later ?, well this is later, so you have to do it now.
-   - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
-      - You can set a static ip address by editing the network configuartion while live booting the machine.
-         ```bash	
+  - You must provide the IP networking configuration and the address of the DNS server to the nodes at FCOS install time (see below). These can be passed as boot arguments if you are installing from an ISO image.
+    - You can set a static ip address by editing the network configuartion while live booting the machine.
+
+         ```bash
          sudo nmtui-edit
          ```
+
          > On the nmtui screen, select the interface you want to edit, then select the IPv4 configuration and change it to manual, then add the IP Address with the CIDR, the gateway address and the DNS server address. Then save and quit.
          > Restart the network service:
+>
          > ```bash
          > sudo systemctl restart NetworkManager
          > ```
+>
          > Then check by running:
+>
          > ```bash
          > ip a
          > ```
-      - You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
-         > `--copy-network` is only required if you are using static ip addresses.
-   
+>
+- You pass the networking configuration to the nodes by adding the flag ```--copy-network``` to the install command (see below).
+   > `--copy-network` is only required if you are using static ip addresses.
 
 Use the following command then just reboot after it finishes and make sure you remove the attached .iso
+
 ```bash
 # Each of the Worker Nodes - worker-\#
 sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign--insecure--insecure-ignition --copy-network
 ```
+
 > If you are using DHCP, you can just use the following commands to install OKD (without the```--copy-network``` flag)
+>
 > ```bash
 > # Each of the Worker Nodes - worker-\#
 > sudo coreos-installer install /dev/sda -I http://<Host_apache_server>/okd/worker.ign --insecure--insecure-ignition
@@ -890,18 +948,22 @@ You can see logs for the bootstrap process also by running the following command
    ssh core@<bootstrap_ip>
    journalctl -b -f -u bootkube.service -u release-image.service
    ```
+
 > You can get the logs also if you check the ```.openshift_install.log``` file on the proxy machine (```~/okd-install/.openshift_install.log```)
+>
 #### Debug
 
 You can debug a node in 2 ways:
 
 - By using the `oc debug` command and get a shell on the node
+
    ```bash
    # On the proxy machine in our case
    oc debug node/<node_name>
    ```
 
 - By using the `ssh` command and get a shell on the node
+
    ```bash
    # On the proxy machine in our case
    ssh core@<node_ip>
@@ -919,6 +981,7 @@ You can restart a node by running the following command:
    ```
 
 In case of a failure, sudden shutdown or restart, you drain the node and then restart it (even if the node is shutdown or restarted by itself, you still have to drain it and restart it)
+
 ```bash
 # On the proxy machine in our case
 oc adm drain <node_name> --ignore-daemonsets --force --delete-emptydir-data
@@ -928,7 +991,7 @@ ssh core@<node_ip> sudo systemctl reboot
 
 #### Proxy machine (precision)
 
-In the present documentation, we are using a proxy machine to setup configuration files, web server, etc. 
+In the present documentation, we are using a proxy machine to setup configuration files, web server, etc.
 Also, the important reason, is that on the proxy machine, we have the ```kubeconfig``` file that we use to connect to the cluster as ```system:admin```.
 For this reason, we execute all the commands on the proxy machine, but you can execute them on any machine that has access to the cluster (```kubeconfig``` file, or [```oc``` command configured to connect to the cluster](#oc-connection-to-the-cluster)).
 
@@ -937,12 +1000,14 @@ For this reason, we execute all the commands on the proxy machine, but you can e
 To connect to the cluster using the oc command, you need to have an account on the cluster (user and password).
 
 Use the following command to login to the cluster:
+
 ```bash
 # On any machine
 oc login https://api.<cluster_name>.<domain>:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
 ```
 
 > In our case, the command will be:
+>
 > ```bash
 > oc login https://api.okd.osupytheas.fr:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
 > ```
