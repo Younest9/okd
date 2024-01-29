@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# Set the desired network configuration values
+# Set the desired network configuration values (change the ip addresses to match your network)
 ipv4_address="172.20.9.154/23"
 gateway="172.20.8.1"
 dns="172.20.9.10"
-search_domain="osupytheas.fr"
+search_domain="<your domain>"
 connection_name="Wired Connection 1"
 
 # Edit the NetworkManager connection using nmcli (set to manual)
