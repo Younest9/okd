@@ -1,5 +1,7 @@
 # OKD
 
+**Last verified / tested context:** personal bare-metal lab notes (stamp: September 20, 2026). OKD versions move fast — treat this as a historical guide unless you re-validate against a current release.
+
 ## Overview
 
 - OKD is a distribution of Kubernetes optimized for continuous application development and multi-tenant deployment
