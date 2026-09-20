@@ -1,5 +1,7 @@
 # OKD
 
+> **Lab examples only:** hostnames such as `okd.example.com`, `api.okd.example.com`, and `*.apps.okd.example.com` are fictional placeholders. Replace them with your own base domain and cluster name.
+
 ## Overview
 
 - OKD is a distribution of Kubernetes optimized for continuous application development and multi-tenant deployment
@@ -140,7 +142,7 @@ DNS A/AAAA or CNAME records are used for name resolution and PTR records are use
 
 The following DNS records are required for a user-provisioned OKD cluster and they must be in place before installation. In each record, `<cluster_name>` is the cluster name and `<base_domain>` is the base domain that you specify in the install-config.yaml file. A complete DNS record takes the form: `<component>.<cluster_name>.<base_domain>.`
 
-For example, if you specify the cluster name as okd and the base domain as osupytheas.fr, the DNS record for the Kubernetes API is api.okd.osupytheas.fr., and so on.
+For example, if you specify the cluster name as okd and the base domain as example.com, the DNS record for the Kubernetes API is api.okd.example.com., and so on.
 
 Required DNS and reverse DNS records:
 | Component | DNS record | Description |
@@ -154,65 +156,65 @@ Required DNS and reverse DNS records:
 
 ##### Example DNS Configuration for a User-Provided Infrastructure
 
-In this example, the cluster name is okd and the base domain is osupytheas.fr.
+In this example, the cluster name is okd and the base domain is example.com.
 
 - DNS Records:
 
    ```text
    ; Temp Bootstrap Node
-   bootstrap.okd.osupytheas.fr.        IN      A      <ip_address_reserved_for_bootstrap_node_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   bootstrap.okd.example.com.        IN      A      <ip_address_reserved_for_bootstrap_node_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
    ; Control Plane Nodes (Master Nodes)
-   cp-1.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-   cp-2.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-   cp-3.okd.osupytheas.fr.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   cp-1.okd.example.com.         IN      A      <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   cp-2.okd.example.com.         IN      A      <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   cp-3.okd.example.com.         IN      A      <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
    ; Worker Nodes
-   worker-1.okd.osupytheas.fr.     IN      A      <ip_address_reserved_for_worker_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-   worker-2.okd.osupytheas.fr.     IN      A      <ip_address_reserved_for_worker_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   worker-1.okd.example.com.     IN      A      <ip_address_reserved_for_worker_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   worker-2.okd.example.com.     IN      A      <ip_address_reserved_for_worker_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
    ; OKD Internal - Load balancer
-   api.okd.osupytheas.fr.        IN    A    <the_static_ip_address_we_setup>
-   api-int.okd.osupytheas.fr.    IN    A    <the_static_ip_address_we_setup>
-   *.apps.okd.osupytheas.fr.     IN    A    <the_static_ip_address_we_setup>
-   proxy.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_want_to_setup>  ;; Optional, if not specified, must set a static IP for the proxy machine.
+   api.okd.example.com.        IN    A    <the_static_ip_address_we_setup>
+   api-int.okd.example.com.    IN    A    <the_static_ip_address_we_setup>
+   *.apps.okd.example.com.     IN    A    <the_static_ip_address_we_setup>
+   proxy.okd.example.com.     IN     A     <the_static_ip_address_we_want_to_setup>  ;; Optional, if not specified, must set a static IP for the proxy machine.
 
    ; ETCD Cluster
-   etcd-0.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-   etcd-1.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
-   etcd-2.okd.osupytheas.fr.    IN    A     <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   etcd-0.okd.example.com.    IN    A     <ip_address_reserved_for_master_node_1_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   etcd-1.okd.example.com.    IN    A     <ip_address_reserved_for_master_node_2_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
+   etcd-2.okd.example.com.    IN    A     <ip_address_reserved_for_master_node_3_in_dhcp> or <ip_address_we_will_setup_on_machines_on_boot>
 
    ; OKD Internal SRV records
-   _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-0.okd
-   _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-1.okd
-   _etcd-server-ssl._tcp.okd.osupytheas.fr.    86400     IN    SRV     0    10    2380    etcd-2.okd
+   _etcd-server-ssl._tcp.okd.example.com.    86400     IN    SRV     0    10    2380    etcd-0.okd
+   _etcd-server-ssl._tcp.okd.example.com.    86400     IN    SRV     0    10    2380    etcd-1.okd
+   _etcd-server-ssl._tcp.okd.example.com.    86400     IN    SRV     0    10    2380    etcd-2.okd
 
    ; OKD Internal - Wildcard Routes
-   oauth-openshift.apps.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_setup>
+   oauth-openshift.apps.okd.example.com.     IN     A     <the_static_ip_address_we_setup>
       
    ; OKD Internal - Console
-   console-openshift-console.apps.okd.osupytheas.fr.     IN     A     <the_static_ip_address_we_setup>
+   console-openshift-console.apps.okd.example.com.     IN     A     <the_static_ip_address_we_setup>
    ```
 
 - Reverse DNS Records:
 
    ```text
    ; OKD Internal - Load balancer
-   <the_static_ip_address_we_setup_reversed>      IN    PTR    proxy.okd.osupytheas.fr. ;; Optional, if not specified, must set a static IP for the proxy machine.
-   <the_static_ip_address_we_setup_reversed>      IN    PTR    api.okd.osupytheas.fr.
-   <the_static_ip_address_we_setup_reversed>      IN    PTR    api-int.okd.osupytheas.fr.
+   <the_static_ip_address_we_setup_reversed>      IN    PTR    proxy.okd.example.com. ;; Optional, if not specified, must set a static IP for the proxy machine.
+   <the_static_ip_address_we_setup_reversed>      IN    PTR    api.okd.example.com.
+   <the_static_ip_address_we_setup_reversed>      IN    PTR    api-int.okd.example.com.
    ;
    ; Temp Bootstrap Node
-   <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    bootstrap.okd.osupytheas.fr.
+   <ip_address_reserved_for_bootstrap_node_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    bootstrap.okd.example.com.
    ;
    ; Control Plane Nodes (Master Nodes)
-   <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-1.okd.osupytheas.fr.
-   <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-2.okd.osupytheas.fr.
-   <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-3.okd.osupytheas.fr.
+   <ip_address_reserved_for_master_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-1.okd.example.com.
+   <ip_address_reserved_for_master_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-2.okd.example.com.
+   <ip_address_reserved_for_master_node_3_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    cp-3.okd.example.com.
    ;
    ; Worker Nodes
-   <ip_address_reserved_for_worker_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-1.okd.osupytheas.fr.
-   <ip_address_reserved_for_worker_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-2.okd.osupytheas.fr.
+   <ip_address_reserved_for_worker_node_1_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-1.okd.example.com.
+   <ip_address_reserved_for_worker_node_2_in_dhcp_reversed> or <ip_address_we_will_setup_on_machines_on_boot_reversed>    IN    PTR    worker-2.okd.example.com.
    ```
 
 > **Note:**
@@ -263,7 +265,7 @@ The load balancer infrastructure must meet the following requirements:
    - You can download it via the official website: <https://www.debian.org/distrib/netinst>
    - For quick download, you can [click here to download debian 12.0.0-amd64-netinst](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso), because that's what we'll be working with.
 
-2. For the pull secret, it's not mandatory to use the one from RedHat, you can use this one instead:
+2. For the pull secret, it's not mandatory to use the one from RedHat, you can use this **sample** (non-production) pull secret instead:
 
    ```json
    {
@@ -277,7 +279,7 @@ The load balancer infrastructure must meet the following requirements:
 
       Copy it to a file on the Downloads folder of your local machine and name it `pull-secret.txt`.
 
-   > This ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` to copy-paste easily.
+   > Sample only: ```{"auths":{"fake":{"auth":"aWQ6cGFzcwo="}}}``` to copy-paste easily.
    >
    > You can use the one from RedHat if you want, but you'll need to create an account on their website, and you'll need to have a valid subscription to continue using the cluster after the 60 days trial.
    > You have to download the pull secret from the [RedHat OpenShift Cluster Manager](https://cloud.redhat.com/openshift)
@@ -403,7 +405,7 @@ The load balancer infrastructure must meet the following requirements:
 13. Download [config files](https://github.com/Younest9/okd) for each of the steps we are about to do (```haproxy.cfg```, ```install-config.yaml```)
 
       ```bash
-      git clone https://gitlab.osupytheas.fr/yelarjouni/okd.git
+      git clone https://gitlab.example.com/org/okd.git
       ```
 
       Change the preferred editor to "```nano```" (optional)
@@ -537,7 +539,7 @@ The load balancer infrastructure must meet the following requirements:
 
 > If you want to change default values, you can use the ```install-config-template.yaml``` file as a reference.
 
-- Line 2 should contain your base domain (in our case ```osupytheas.fr```).
+- Line 2 should contain your base domain (in our case ```example.com```).
 - Line 10 should contain the number of control plane nodes (master nodes) you want (default is 3)
 - Line 12 should contain the cluster name (in our case ```okd```)
 - Line 17 should contain the network type (```OpenShiftSDN``` (less features but more reliable) or ```OVNKubernetes```( more features but less reliable)) (In our case ```OpenShiftSDN```)
@@ -1009,7 +1011,7 @@ oc login https://api.<cluster_name>.<domain>:6443 -u <user_name> -p <password> -
 > In our case, the command will be:
 >
 > ```bash
-> oc login https://api.okd.osupytheas.fr:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
+> oc login https://api.okd.example.com:6443 -u <user_name> -p <password> --insecure-skip-tls-verify=true
 > ```
 
 #### `oc` commands

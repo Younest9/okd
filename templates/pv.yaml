@@ -25,8 +25,8 @@ spec:
   #       - key: kubernetes.io/hostname
   #         operator: In
   #         values:
-  #         - worker-1.okd.osupytheas.fr
-  #         - worker-2.okd.osupytheas.fr
+  #         - worker-1.okd.example.com
+  #         - worker-2.okd.example.com
   ### NFS storage ###
   # nfs:
   #   path: /mnt/md72/UMS/okd

@@ -298,11 +298,11 @@ spec:
           - key: kubernetes.io/hostname
             operator: In
             values:
-            - okd-cp-1.okd.osupytheas.fr
-            - okd-cp-2.okd.osupytheas.fr
-            - okd-cp-3.okd.osupytheas.fr
-            - worker-1.okd.osupytheas.fr
-            - worker-2.okd.osupytheas.fr
+            - okd-cp-1.okd.example.com
+            - okd-cp-2.okd.example.com
+            - okd-cp-3.okd.example.com
+            - worker-1.okd.example.com
+            - worker-2.okd.example.com
 EOF
 
 cat <<EOF > pvc.yaml
@@ -426,7 +426,7 @@ metadata:
   labels:
     app: code-server
 spec:
-    host: code-server.$project.apps.okd.osupytheas.fr # Or any other domain you want (you will need to add it to your DNS server)
+    host: code-server.$project.apps.okd.example.com # Or any other domain you want (you will need to add it to your DNS server)
     port:
         targetPort: 8443
     tls:
@@ -458,7 +458,7 @@ else
     exit 1
 fi
 echo ""
-echo "You can now access your code-server instance at https://code-server.$project.apps.okd.osupytheas.fr"
+echo "You can now access your code-server instance at https://code-server.$project.apps.okd.example.com"
 
 echo "The default password is 'password'"
 

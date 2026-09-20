@@ -113,7 +113,7 @@ oc create secret tls <secret name> --cert=<path to the certificate> --key=<path 
 > Example:
 >
 > ```bash
-> oc create secret tls osupytheas.fr --cert=/etc/ssl/private/osupytheas_fr.pem --key=/etc/ssl/private/osupytheas_fr.key -n cert-manager
+> oc create secret tls example-com --cert=/etc/ssl/private/example_com.pem --key=/etc/ssl/private/example_com.key -n cert-manager
 > ```
 
 Do that for each certificate.
@@ -126,7 +126,7 @@ To deploy some applications, which needs some specific permissions, we'll have t
 
 To deploy Wordpress, which its container image will be running in root user, we'll need to create a project, that permits us to do that. (the following steps are valid for any application that needs to run in root user)
 
-For that we'll use a template that will create a project, a service account, a role and a role binding ([See templates folder in the wordpress repository](https://gitlab.osupytheas.fr/yelarjouni/deployer-wordpress-okd)).
+For that we'll use a template that will create a project, a service account, a role and a role binding ([See templates folder in the wordpress repository](https://gitlab.example.com/org/deployer-wordpress-okd)).
 
 But by default, the template can't create a project, because when we try to use it, we'll get the following error:
 
@@ -250,4 +250,4 @@ exit the editor and save the changes.
 
 Now we should be able to mount nfs volumes in the containers.
 
-Refer to the [README.md in the wordpress repository](https://gitlab.osupytheas.fr/yelarjouni/deployer-wordpress-okd) for instructions on how to deploy Wordpress.
+Refer to the [README.md in the wordpress repository](https://gitlab.example.com/org/deployer-wordpress-okd) for instructions on how to deploy Wordpress.
